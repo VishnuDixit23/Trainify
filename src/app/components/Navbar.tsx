@@ -1,32 +1,77 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaUserCircle } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar({ user }: { user: any }) {
   const [showProfile, setShowProfile] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleLogout = () => {
-    localStorage.removeItem("user"); // Remove user data
-    router.push("/login"); // Redirect to login
+    localStorage.removeItem("user");
+    router.push("/login");
   };
 
   return (
-    <nav className="flex justify-between items-center p-6 bg-gray-900 text-white shadow-md">
-      <span className="text-2xl font-semibold">Trainify</span>
+    <nav
+      className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${
+        scrolled ? "bg-stone-900 shadow-lg" : "bg-gradient-to-r from bg-transparent-100 to-stone-700"
+      } text-white py-4 px-6 flex justify-between items-center shadow-md`}
+    >
+      <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-stone-400 to-stone-400 cursor-pointer">
+        Trainify
+      </span>
+      
+      <div className="flex space-x-6">
+        {["Workouts", "Diet Plans", "Progress"].map((item) => (
+          <button
+            key={item}
+            className="text-lg font-medium stone-400 hover:text-stone-500 transition-all duration-200"
+            onClick={() => {
+              const section = document.getElementById("our-services");
+              section?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+      
       <div className="relative">
-        <button onClick={() => setShowProfile(!showProfile)} className="focus:outline-none">
-          <FaUserCircle size={30} />
+        <button
+          onClick={() => setShowProfile(!showProfile)}
+          className="focus:outline-none hover:text-stone-500 transition-all duration-200"
+        >
+          <FaUserCircle size={32} />
         </button>
-        {showProfile && (
-          <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg p-4">
-            <p className="font-semibold">Hello, {user.name} 👋</p>
-            <p className="text-sm text-gray-600">{user.email}</p>
-            <button onClick={handleLogout} className="mt-3 w-full bg-red-500 text-white py-2 rounded">
-              Logout
-            </button>
-          </div>
-        )}
+        <AnimatePresence>
+          {showProfile && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="absolute right-0 mt-2 w-98 bg-transparent-700 bg-opacity-90 backdrop-blur-lg text-white rounded shadow-lg p-4 border border-gray-700"
+            >
+              <p className="font-semibold text-stone-300">Hello, {user.name}</p>
+              <p className="text-sm text-stone-400">{user.email}</p>
+              <button
+                onClick={handleLogout}
+                className="mt-3 w-24 text-stone-700 bg-red-500 hover:bg-red-600 transition-all duration-200 text-white py-2 rounded-full"
+              >
+                Logout
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   );

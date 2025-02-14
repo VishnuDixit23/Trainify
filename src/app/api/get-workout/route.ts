@@ -82,6 +82,7 @@ export async function POST(req: Request) {
           { "day": "Day 1", "workouts": [ { "exercise": "Squats", "reps": "12", "sets": "3" } ] }
         ]
       }
+        
       Respond in strict JSON format.
     `;
 
@@ -93,6 +94,8 @@ export async function POST(req: Request) {
 
     let responseText = result.response.candidates[0].content.parts[0].text;
     responseText = responseText.replace(/```json|```/g, "").trim();
+    console.log("Raw AI Response:", responseText);
+
 
     let aiGeneratedPlan;
     try {

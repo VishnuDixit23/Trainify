@@ -2,14 +2,13 @@
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import router from "next/router";
 
 const WorkoutDetailsPage: React.FC = () => {
   const searchParams = useSearchParams();
   const initialWorkoutPlan = JSON.parse(searchParams.get("workoutPlan") || "{}");
   const [workoutPlan, setWorkoutPlan] = useState(initialWorkoutPlan);
-  const [exerciseAlternatives, setExerciseAlternatives] = useState<{ [key: string]: string[] }>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const difficulties = ["Easy", "Medium", "Hard"];
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -24,38 +23,6 @@ const WorkoutDetailsPage: React.FC = () => {
       }
     }
   }, []);
-
-  async function fetchAlternatives(exerciseName: string) {
-    try {
-      const response = await fetch("/api/exercise-alternatives", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ exercise: exerciseName }),
-      });
-      if (!response.ok) throw new Error("Failed to fetch alternatives");
-      const data = await response.json();
-      setExerciseAlternatives((prev) => ({ ...prev, [exerciseName]: data.alternatives }));
-    } catch (error) {
-      console.error("Error fetching alternatives:", error);
-    }
-  }
-
-  const swapExercise = (dayIndex: number, exerciseIndex: number, newExercise: string) => {
-    setWorkoutPlan((prevPlan: any) => {
-      const updatedPlan = { ...prevPlan };
-      updatedPlan.schedule[dayIndex].workouts[exerciseIndex].exercise = newExercise;
-      fetchAlternatives(newExercise);
-      return updatedPlan;
-    });
-  };
-
-  const adjustDifficulty = (dayIndex: number, exerciseIndex: number, difficulty: string) => {
-    setWorkoutPlan((prevPlan: any) => {
-      const updatedPlan = { ...prevPlan };
-      updatedPlan.schedule[dayIndex].workouts[exerciseIndex].difficulty = difficulty;
-      return updatedPlan;
-    });
-  };
 
   return (
     <div className="min-h-screen bg-[#0f172a] flex flex-col items-center py-12 px-6 text-white">
@@ -83,34 +50,6 @@ const WorkoutDetailsPage: React.FC = () => {
                         <span>
                           {workout.exercise}: {workout.reps} reps, {workout.sets} sets
                         </span>
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => fetchAlternatives(workout.exercise)}
-                            className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                          >
-                            Swap
-                          </button>
-                          {exerciseAlternatives[workout.exercise] && (
-                            <select
-                              onChange={(e) => swapExercise(dayIndex, exerciseIndex, e.target.value)}
-                              className="border px-2 py-1 rounded-md bg-gray-800 text-white"
-                            >
-                              <option value="">Select Alternative</option>
-                              {exerciseAlternatives[workout.exercise].map((alt) => (
-                                <option key={alt} value={alt}>{alt}</option>
-                              ))}
-                            </select>
-                          )}
-                          <select
-                            value={workout.difficulty || "Medium"}
-                            onChange={(e) => adjustDifficulty(dayIndex, exerciseIndex, e.target.value)}
-                            className="border px-2 py-1 rounded-md bg-gray-800 text-white"
-                          >
-                            {difficulties.map((level) => (
-                              <option key={level} value={level}>{level}</option>
-                            ))}
-                          </select>
-                        </div>
                       </li>
                     ))
                   ) : (
@@ -123,6 +62,14 @@ const WorkoutDetailsPage: React.FC = () => {
             <p className="text-gray-400 mt-4">No workout plan available.</p>
           )}
         </div>
+        <div className="mt-8 flex justify-center space-x-4">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold text-white shadow-lg"
+            >
+              🔙 Back to Dashboard
+            </button>
+          </div>
       </div>
     </div>
   );

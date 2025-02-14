@@ -135,43 +135,61 @@ const WorkoutDetailsPage: React.FC = () => {
       "Flexibility and Mobility",
       "Rehabilitation",
     ],
+    dietaryPreferences: ["Vegetarian", "Non-Vegetarian", "Vegan"],
   };
 
   if (loading) {
     return (
       <motion.div
-        className="min-h-screen flex items-center justify-center text-white"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        Loading...
-      </motion.div>
+      className="min-h-screen flex items-center justify-center bg-black/80 backdrop-blur-md fixed inset-0"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex flex-col items-center gap-4">
+        {/* Animated Loader Ring */}
+        <motion.div
+          className="w-16 h-16 border-t-4 border-stone-400 border-opacity-50 rounded-full animate-spin"
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+        />
+
+        {/* Loading Text Animation */}
+        <motion.p
+          className="text-lg font-semibold text-stone-300 tracking-widest"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+        >
+          Loading...
+        </motion.p>
+      </div>
+    </motion.div>
     );
   }
 
   return (
+    
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-[#1e1e2e] via-[#111827] to-[#1e1e2e] flex flex-col items-center py-12 px-6"
+      className="min-h-screen bg-gradient-to-br from bg-stone-800 via-[#111827] to-[#1e1e2e] flex flex-col items-center py-12 px-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-    >
+    > 
       {existingPlan ? (
         <motion.div
-          className="w-full max-w-3xl bg-[#2a2a40] rounded-3xl shadow-2xl p-8 text-left border border-gray-700 text-white"
+          className="w-full max-w-5xl bg-stone-800 rounded-3xl shadow-2xl p-8 text-left border border-gray-300 text-white"
           initial={{ y: -50 }}
           animate={{ y: 0 }}
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl font-semibold mb-4">Your Existing Workout Plan</h2>
           <div className="space-y-6">
-            <div className="p-4 bg-gray-800 rounded-lg">
+            <div className="p-4 bg-stone-700 rounded-lg">
               <h3 className="text-2xl font-bold">{existingPlan.workoutPlan.title}</h3>
               <p className="text-gray-300">{existingPlan.workoutPlan.description}</p>
             </div>
-
-            <div className="p-4 bg-gray-800 rounded-lg">
+            <div className="p-4 bg-stone-700 rounded-lg">
               <h3 className="text-xl font-semibold mb-2">Important Considerations</h3>
               <ul className="list-disc ml-5 text-gray-300">
                 {existingPlan.workoutPlan.important_considerations.map((item: any, index: number) => (
@@ -182,47 +200,68 @@ const WorkoutDetailsPage: React.FC = () => {
                 ))}
               </ul>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-gray-800 rounded-lg">
+              <div className="p-4 bg-stone-700 rounded-lg">
                 <h3 className="text-xl font-semibold">Warm-up</h3>
-                <p className="text-gray-300">{existingPlan.workoutPlan.warm_up}</p>
+                <p className="text-gray-300">
+                  {Array.isArray(existingPlan.workoutPlan.warm_up) ? (
+                    <ul>
+                      {existingPlan.workoutPlan.warm_up.map((warmup: any, index: number) => (
+                        <li key={index}>
+                          <strong>{warmup.exercise}</strong>: {warmup.duration} minutes
+                          {warmup.example && (
+                            <span className="italic text-sm"> Example: {warmup.example}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span>{existingPlan.workoutPlan.warm_up || "Not Provided"}</span>
+                  )}
+                </p>
               </div>
-              <div className="p-4 bg-gray-800 rounded-lg">
+              <div className="p-4 bg-stone-700 rounded-lg">
                 <h3 className="text-xl font-semibold">Cool-down</h3>
-                <p className="text-gray-300">{existingPlan.workoutPlan.cool_down}</p>
+                <p className="text-gray-300">
+                  {Array.isArray(existingPlan.workoutPlan.cool_down) ? (
+                    <ul>
+                      {existingPlan.workoutPlan.cool_down.map((cooldown: any, index: number) => (
+                        <li key={index}>
+                          <strong>{cooldown.exercise}</strong>: {cooldown.duration} minutes
+                          {cooldown.example && (
+                            <span className="italic text-sm"> Example: {cooldown.example}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span>{existingPlan.workoutPlan.cool_down || "Not Provided"}</span>
+                  )}
+                </p>
               </div>
             </div>
-
-            <div className="p-4 bg-gray-800 rounded-lg">
-              <h3 className="text-xl font-semibold mb-2">Workout Schedule</h3>
+            <div className="p-4 bg-stone-800 rounded-lg">
+              <h3 className="text-2xl text-stone-100 font-extrabold mb-2">Workout Schedule</h3>
               <div className="space-y-4">
                 {existingPlan.workoutPlan.schedule.map((day: any, dayIndex: number) => (
-                  <div key={dayIndex} className="p-4 bg-gray-700 rounded-lg">
-                    <h4 className="text-lg font-semibold">{day.day}</h4>
-                    {Array.isArray(day.workouts) ? (
-                      <ul className="list-disc ml-5 text-gray-300">
-                        {day.workouts.map((workout: any, workoutIndex: number) => (
-                          <li key={workoutIndex} className="flex items-center space-x-4">
-                          
-                            <span>
-                              <strong>{workout.exercise}</strong> - {workout.reps} reps, {workout.sets} sets
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-gray-300">Rest Day</p>
-                    )}
+                  <div key={dayIndex} className="p-4 bg-stone-700 rounded-lg">
+                    <h4 className="text-lg font-questrial">{day.day}</h4>
+                    {day.workouts.map((workout: any, index: number) => (
+                      <div key={index} className="mt-2">
+                        <p>
+                          <strong>{workout.exercise}</strong>: {workout.reps} reps ×{" "}
+                          {workout.sets} sets
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
             </div>
           </div>
-
           <button
             onClick={handleDeletePlan}
-            className="mt-4 py-3 px-6 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transform hover:scale-105 focus:outline-none"
+            className="mt-4 py-3 px-6 bg-red-400 text-stone-600 font-semibold rounded-lg shadow-md hover:bg-red-500 transform hover:scale-105 focus:outline-none"
           >
             Delete Workout Plan
           </button>
@@ -235,8 +274,9 @@ const WorkoutDetailsPage: React.FC = () => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl font-semibold text-white text-center mb-6">Enter Your Details</h2>
-
+          <h2 className="text-3xl font-semibold text-white text-center mb-6">
+            Enter Your Details
+          </h2>
           {Object.keys(formData).map((field) => {
             if (dropdownOptions[field]) {
               return (
@@ -253,7 +293,7 @@ const WorkoutDetailsPage: React.FC = () => {
                       {option}
                     </option>
                   ))}
-                </select>
+               </select>
               );
             }
             return (
@@ -267,7 +307,6 @@ const WorkoutDetailsPage: React.FC = () => {
               />
             );
           })}
-
           <button
             type="submit"
             className="py-3 px-6 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transform hover:scale-105 focus:outline-none"
@@ -276,10 +315,8 @@ const WorkoutDetailsPage: React.FC = () => {
           </button>
         </motion.form>
       )}
-
       {error && <p className="mt-4 text-red-500">{error}</p>}
     </motion.div>
   );
 };
-
 export default WorkoutDetailsPage;

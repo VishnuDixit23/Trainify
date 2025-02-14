@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { connectToDatabase } from "../../../lib/mongodb";
 import jwt from "jsonwebtoken";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY as string);
+const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY as string)
 
 export async function POST(req: Request) {
   try {
@@ -38,9 +38,7 @@ export async function POST(req: Request) {
       preferredMealCount,
     } = await req.json();
 
-    if (!age || !height || !weight || !goal) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-    }
+
 
     // ✅ Connect to MongoDB
     const db = await connectToDatabase();
@@ -49,57 +47,50 @@ export async function POST(req: Request) {
     // ✅ **Check if user already has a diet plan**
     const existingPlan = await collection.findOne({ userId });
 
-    if (existingPlan) {
-      return NextResponse.json(
-        { error: "You already have a diet plan. Delete it before generating a new one.", existingPlan },
-        { status: 400 }
-      );
-    }
-
     // ✅ **Generate AI diet plan**
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
-      Generate a **personalized 7-day diet plan** in strict **JSON format** for a ${age}-year-old aiming for **${goal}**.
-      User Details:
-      - Age: ${age}
-      - Height: ${height} cm
-      - Weight: ${weight} kg
-      - Activity Level: ${activityLevel}
-      - Dietary Preferences: ${dietaryPreferences || "None"}
-      - Allergies: ${allergies || "None"}
-      - Preferred Meals per Day: ${preferredMealCount || 5}
+  Generate a **personalized 7-day diet plan** in strict **JSON format** for a ${age}-year-old aiming for **${goal}**.
+  User Details:
+  - Age: ${age}
+  - Height: ${height} cm
+  - Weight: ${weight} kg
+  - Activity Level: ${activityLevel}
+  - Dietary Preferences: ${dietaryPreferences || "None"} (Ensure that all meals strictly follow this dietary preference. No exceptions.)
+  - Allergies: ${allergies || "None"} (Completely exclude any ingredients that the user is allergic to.)
+  - Preferred Meals per Day: ${preferredMealCount || 5}
 
-      The JSON should include:
-      - **title**: A catchy name for the diet plan
-      - **description**: A short overview of the meal plan
-      - **daily_caloric_intake**: Total recommended daily calories
-      - **macronutrients**: Breakdown of protein, carbs, fats in grams
-      - **pre_workout_meal**: Suggested pre-workout meal for energy
-      - **post_workout_meal**: Suggested post-workout meal for recovery
-      - **meals**: A list of meals for **Breakfast, Lunch, Dinner, Snacks**
-      - **important_considerations**: Any notes on hydration, timing, or nutritional advice
+  The JSON should include:
+  - **title**: A catchy name for the diet plan
+  - **description**: A short overview of the meal plan
+  - **daily_caloric_intake**: Total recommended daily calories
+  - **macronutrients**: Breakdown of protein, carbs, fats in grams
+  - **pre_workout_meal**: Suggested pre-workout meal for energy
+  - **post_workout_meal**: Suggested post-workout meal for recovery
+  - **meals**: A list of meals for **Breakfast, Lunch, Dinner, Snacks** (ensuring they fit within the dietary preference)
+  - **important_considerations**: Any notes on hydration, timing, or nutritional advice
 
-      **Strict JSON Format Example**:
-      {
-        "title": "Muscle Gain High-Protein Diet",
-        "description": "A structured 7-day meal plan tailored for muscle growth.",
-        "daily_caloric_intake": "2800 kcal",
-        "macronutrients": { "protein": "180g", "carbs": "300g", "fats": "70g" },
-        "pre_workout_meal": "Oatmeal with banana & peanut butter",
-        "post_workout_meal": "Chicken breast, rice, and steamed broccoli",
-        "meals": [
-          { "meal": "Breakfast", "items": ["Scrambled eggs", "Oatmeal", "Avocado toast"] },
-          { "meal": "Lunch", "items": ["Grilled salmon", "Quinoa", "Steamed spinach"] },
-          { "meal": "Dinner", "items": ["Chicken breast", "Sweet potatoes", "Asparagus"] },
-          { "meal": "Snack 1", "items": ["Protein shake", "Almonds"] },
-          { "meal": "Snack 2", "items": ["Greek yogurt", "Berries"] }
-        ],
-        "important_considerations": [{ "title": "Hydration", "details": "Drink at least 3 liters of water daily" }]
-      }
-      
-      🔹 **Respond ONLY in valid JSON format** with no extra text.
-    `;
+  🔹 **Strict JSON Format Example**:
+  {
+    "title": "Muscle Gain High-Protein Diet",
+    "description": "A structured 7-day meal plan tailored for muscle growth.",
+    "daily_caloric_intake": "2800 kcal",
+    "macronutrients": { "protein": "180g", "carbs": "300g", "fats": "70g" },
+    "pre_workout_meal": "Oatmeal with banana & peanut butter",
+    "post_workout_meal": "Chicken breast, rice, and steamed broccoli",
+    "meals": [
+      { "meal": "Breakfast", "items": ["Scrambled eggs", "Oatmeal", "Avocado toast"] },
+      { "meal": "Lunch", "items": ["Grilled salmon", "Quinoa", "Steamed spinach"] },
+      { "meal": "Dinner", "items": ["Chicken breast", "Sweet potatoes", "Asparagus"] },
+      { "meal": "Snack 1", "items": ["Protein shake", "Almonds"] },
+      { "meal": "Snack 2", "items": ["Greek yogurt", "Berries"] }
+    ],
+    "important_considerations": [{ "title": "Hydration", "details": "Drink at least 3 liters of water daily" }]
+  }
+
+  🔹 **Respond ONLY in valid JSON format** with no extra text.
+`;
 
     const result = await model.generateContent(prompt);
 

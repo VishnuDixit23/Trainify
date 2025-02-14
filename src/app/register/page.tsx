@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import backgroundImage from '../components/ian-taylor-B5LGz92kaAM-unsplash.jpg'
+import Image from "next/image";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
@@ -23,67 +23,75 @@ const RegisterPage = () => {
 
     const data = await res.json();
     if (res.ok) {
-      router.push("/login"); // Redirect to login page after registration
+      router.push("/login");
     } else {
       setError(data.message || "Registration failed.");
     }
   };
 
   return (
-    <div
-      className="flex items-center justify-center min-h-screen bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${backgroundImage.src})`, // Replace with the actual background image path
-      }}
-    >
-      <div className="bg-black/60 p-8 rounded-lg shadow-xl max-w-md w-full border border-gray-600">
-        <h2 className="text-3xl font-semibold text-center text-white mb-6">
-          Create Account
-        </h2>
-        {error && (
-          <p className="text-red-500 text-sm text-center mb-4">{error}</p>
-        )}
-        <form onSubmit={handleRegister} className="space-y-5">
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full px-4 py-2 bg-gray-800 text-white placeholder-gray-400 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
+      <div className="w-full max-w-5xl bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col md:flex-row m-6">
+        {/* Left Section (Form) */}
+        <div className="w-full md:w-1/2 p-10 flex flex-col justify-center">
+          <h2 className="text-3xl font-bold text-gray-800 text-center">Create an account</h2>
+          <p className="text-gray-500 text-center mt-2">It's easy! Just take a minute and provide your details.</p>
+          {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
+          <form onSubmit={handleRegister} className="mt-6 space-y-4">
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full p-3 border rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-stone-500 bg-gray-50"
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full p-3 border rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-stone-500 bg-gray-50"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full p-3 border rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-stone-500 bg-gray-50"
+            />
+            <button
+              type="submit"
+              className="w-full p-3 bg-stone-500 text-white rounded-lg hover:bg-stone-800 transition"
+            >
+              Create Account
+            </button>
+          </form>
+          <p className="text-center text-sm text-gray-600 mt-4">
+            Already have an account? 
+            <button
+              onClick={() => router.push("/login")}
+              className="text-stone-500 hover:underline ml-1"
+            >
+              Login
+            </button>
+          </p>
+        </div>
+
+        {/* Right Section (Image) */}
+        <div className="w-full md:w-1/2 relative hidden md:block">
+          <Image 
+            src="/bgregjpg.jpg"
+            alt="Gym Background"
+            layout="fill"
+            objectFit="cover"
           />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-2 bg-gray-800 text-white placeholder-gray-400 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-4 py-2 bg-gray-800 text-white placeholder-gray-400 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-md"
-          >
-            Register
-          </button>
-        </form>
-        <p className="text-center text-sm text-white mt-6">
-          Already have an account?{" "}
-          <button
-            onClick={() => router.push("/login")}
-            className="text-blue-400 hover:underline"
-          >
-            Login here
-          </button>
-        </p>
+          <div className="absolute bottom-6 left-6 text-stone-200 text-lg font-semibold">
+            <p>"The pain of discipline is temporary, but the results of consistency are forever."</p>
+          </div>
+        </div>
       </div>
     </div>
   );

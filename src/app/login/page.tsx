@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import backgroundImage from "../components/jon-tyson-U8ekEkD1ytk-unsplash.jpg";
+import Link from "next/link";
+import Image from "next/image";
 import { Moon, Sun } from "lucide-react";
 
 const LoginPage = () => {
@@ -12,13 +13,11 @@ const LoginPage = () => {
   const [darkMode, setDarkMode] = useState(false);
   const router = useRouter();
 
-  // Load theme from localStorage
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
     setDarkMode(storedTheme === "dark");
   }, []);
 
-  // Toggle dark mode
   const toggleDarkMode = () => {
     setDarkMode((prev) => {
       const newTheme = !prev;
@@ -29,7 +28,7 @@ const LoginPage = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); // Reset error message
+    setError("");
 
     const res = await fetch("/api/auth/login", {
       method: "POST",
@@ -48,16 +47,18 @@ const LoginPage = () => {
   };
 
   return (
-    <div
-      className={`relative flex min-h-screen items-center justify-center ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      }`}
-      style={{
-        backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3)), url(${backgroundImage.src})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <div className="flex h-screen w-full bg-gray-100">
+      {/* Left Side */}
+      <div className="w-1/2 flex flex-col justify-center items-center bg-white p-12">
+        <h1 className="text-5xl font-extrabold text-black">
+          TRAINIFY <span className="text-stone-400">POWERED BY</span> AN AI TRAINER.
+        </h1>
+        <p className="mt-4 text-lg text-gray-600">"Don't wait for motivation, create it with consistent action."</p>
+        <Link href="/register" className="mt-6 text-black font-semibold underline hover:text-stone-500 transition-all">
+          Create an account →
+        </Link>
+      </div>
+
       {/* Dark Mode Toggle */}
       <button
         onClick={toggleDarkMode}
@@ -66,54 +67,55 @@ const LoginPage = () => {
         {darkMode ? <Sun className="text-yellow-400" /> : <Moon className="text-gray-800" />}
       </button>
 
-      {/* Login Card */}
-      <div className="relative z-10 w-full max-w-md bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-xl border border-white/20">
-        <h2 className="text-3xl font-bold text-center">Welcome Back</h2>
-        {error && (
-          <p className="text-red-400 text-sm text-center mt-2 animate-shake">{error}</p>
-        )}
+      {/* Right Side - Background & Login Form */}
+      <div className="w-1/2 relative">
+        <Image
+          src="/bglog4.jpg"
+          layout="fill"
+          objectFit="cover"
+          className="absolute inset-0"
+          alt="Gym Background"
+        />
+        <div className="relative flex justify-center items-center h-full">
+          <div className="bg-white bg-opacity-80 backdrop-blur-md p-8 rounded-2xl shadow-lg max-w-md w-full">
+            <h2 className="text-xl font-semibold text-gray-800 text-center">Login to your account</h2>
+            {error && <p className="text-red-500 text-sm text-center mt-3">{error}</p>}
+            <form onSubmit={handleLogin} className="mt-4 space-y-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-3 border rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-stone-400 bg-gray-50"
+                placeholder="Email Address"
+                required
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-3 border rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-stone-400 bg-gray-50"
+                placeholder="Password"
+                required
+              />
 
-        <form onSubmit={handleLogin} className="mt-6">
-        <div className="relative w-full">
-         <input
-          type="email"
-           value={email}
-           onChange={(e) => setEmail(e.target.value)}
-            required
-           className="w-full p-3 text-white text-lg bg-white/10 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-300 focus:bg-white/20 transition-all"
-           placeholder="Enter your email"
-          />
-         </div>
+              {/* Login Button */}
+              <button
+                type="submit"
+                className="w-full p-3 mt-2 text-white bg-stone-500 rounded-lg hover:bg-stone-900 transition-all"
+              >
+                Login
+              </button>
+            </form>
 
-
-         <div className="relative w-full">
-         <input
-          type="password"
-           value={password}
-           onChange={(e) => setPassword(e.target.value)}
-            required
-           className="w-full p-3 text-white text-lg bg-white/10 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-300 focus:bg-white/20 transition-all"
-           placeholder="Enter your password"
-          />
-         </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition-transform transform hover:scale-105 mt-6"
-          >
-            Login
-          </button>
-        </form>
-
-        <p className="text-center text-sm mt-4">
-          New user?{" "}
-          <button
-            onClick={() => router.push("/register")}
-            className="text-blue-400 hover:underline"
-          >
-            Register here
-          </button>
-        </p>
+            {/* Forgot Password */}
+            <p className="text-center text-sm mt-4 text-gray-900">
+              Forgot password?{" "}
+              <Link href="/forgot-password" className="text-stone-500 hover:underline">
+                Reset here
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
