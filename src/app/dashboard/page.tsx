@@ -7,6 +7,7 @@ import Background2Image from "../assets/sven-mieke-Lx_GDv7VA9M-unsplash.jpg";
 import Background3Image from "../assets/brooke-lark-jUPOXXRNdcA-unsplash.jpg";
 import Background4Image from "../assets/hester-qiang-95t94hZTESw-unsplash.jpg";
 import getFitImage from "../assets/danielle-cerullo-CQfNt66ttZM-unsplash.jpg";
+import Background5Image from "../../app/assets/service4jpg.jpg"
 import wtImage from "../assets/daniel-apodaca-WdoQio6HPVA-unsplash.jpg";
 import Link from "next/link";
 import { CardContent } from "../components/card";
@@ -259,6 +260,28 @@ export default function DashboardPage() {
           </p>
           <p className="text-gray-400 italic group-hover:text-gray-200 transition-colors">
             - Lao Tzu
+          </p>
+        </div>
+      </div>
+          {/* Service 4 */}
+          <div
+        className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group cursor-pointer"
+        onClick={() => router.push("/routines")}
+      >
+        <div
+            style={{ backgroundImage: `url(${Background5Image.src})` }}
+          className="w-full h-56 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
+        ></div>
+
+        {/* Overlay Effect */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+        <div className="p-6 text-center relative z-10">
+          <h3 className="text-xl font-semibold text-white group-hover:text-stone-700 transition-colors duration-300">
+            Make Your Own Routine
+          </h3>
+          <p className="text-gray-300 group-hover:text-gray-100 transition-colors">
+          Popular workout plans designed by experts
           </p>
         </div>
       </div>

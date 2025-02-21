@@ -1,30 +1,42 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { Db } from "mongodb";
+import { connectToDatabase } from "./mongodb"; // Ensure you're using the native driver
 
-interface Exercise {
-  name: string;
-  sets: number;
-  reps: number;
+export interface Routine {
+  userId: string;
+  routineName: string;
+  exercises: {
+    exerciseName: string;
+    sets: number;
+    reps: number;
+    weight?: number; // Optional for bodyweight exercises
+  }[];
 }
 
-export interface IRoutine extends Document {
-  userId?: string; // Optional, for user-created routines
-  name: string;
-  exercises: Exercise[];
-  isPreMade: boolean; // Distinguish between pre-made and user-created routines
+// Function to insert a routine into the database
+export async function createRoutine(routine: Routine) {
+  const db: Db = await connectToDatabase();
+  const routinesCollection = db.collection("routines"); // Ensure this matches your DB collection name
+
+  const result = await routinesCollection.insertOne(routine);
+  return result;
 }
 
-const RoutineSchema = new Schema<IRoutine>({
-  userId: { type: String, required: false }, // Required only for user routines
-  name: { type: String, required: true },
-  exercises: [
-    {
-      name: { type: String, required: true },
-      sets: { type: Number, required: true },
-      reps: { type: Number, required: true },
-    },
-  ],
-  isPreMade: { type: Boolean, required: true, default: false },
-});
+// Function to find a routine by user ID
+export async function getRoutineByUserId(userId: string) {
+  const db: Db = await connectToDatabase();
+  return db.collection("routines").findOne({ userId });
+}
 
-const Routine = mongoose.models.Routine || mongoose.model<IRoutine>("Routine", RoutineSchema);
-export default Routine;
+export async function deleteRoutineByUserId(userId: string) {
+  try {
+    const db = await connectToDatabase();
+    const routinesCollection = db.collection("routines");
+
+    const result = await routinesCollection.deleteOne({ userId });
+
+    return result.deletedCount > 0; // Returns `true` if a document was deleted, otherwise `false`
+  } catch (error) {
+    console.error("🚨 Error deleting routine:", error);
+    throw new Error("Failed to delete routine");
+  }
+}

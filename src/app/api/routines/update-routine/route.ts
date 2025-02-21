@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
-import { deleteRoutineByUserId } from "@/lib/Routine";
+import Routine from "../../../../lib/Routine";
 
 interface DecodedToken {
   userId: string;
@@ -12,6 +12,7 @@ interface DecodedToken {
 // Utility function to verify token
 const verifyToken = (authHeader: string | null): DecodedToken | null => {
   if (!authHeader?.startsWith("Bearer ")) {
+    console.error("🚨 No Bearer token found in Authorization header.");
     return null;
   }
 
@@ -30,36 +31,40 @@ const verifyToken = (authHeader: string | null): DecodedToken | null => {
   }
 };
 
-export async function DELETE(req: NextRequest) {
-  console.log("➡️ [DELETE] /api/delete-user-routine - Request received");
-
+export async function PUT(req: NextRequest) {
   try {
-    // 🔹 Extract & verify auth token
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
+      console.log("❌ No Authorization header");
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
     }
 
     const decodedToken = verifyToken(authHeader);
     if (!decodedToken?.userId) {
+      console.log("❌ Invalid token");
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
     }
 
-    const userId = decodedToken.userId;
-
     await connectToDatabase();
-    console.log("✅ Database connected.");
+    const userId = decodedToken.userId;
+    const { routineId, routineName, exercises } = await req.json();
 
-    const isDeleted = await deleteRoutineByUserId(userId);
-
-    if (!isDeleted) {
-      console.warn(`⚠️ No routine found for user '${userId}' to delete.`);
-      return NextResponse.json({ success: false, message: "No routine found" }, { status: 404 });
+    if (!routineId || !routineName || !exercises) {
+      return NextResponse.json({ error: "Missing routine data" }, { status: 400 });
     }
 
-    console.log(`✅ Routine deleted successfully for user '${userId}'.`);
-    return NextResponse.json({ success: true, message: "Routine deleted successfully" }, { status: 200 });
+    // Find and update the routine
+    const updatedRoutine = await Routine.findOneAndUpdate(
+      { _id: routineId, userId }, // Ensure the routine belongs to the user
+      { routineName, exercises },
+      { new: true }
+    );
 
+    if (!updatedRoutine) {
+      return NextResponse.json({ error: "Routine not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Routine updated successfully", routine: updatedRoutine }, { status: 200 });
   } catch (error) {
     console.error("🚨 Server Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

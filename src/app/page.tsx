@@ -10,6 +10,7 @@ import Background2Image from "../app/assets/sven-mieke-Lx_GDv7VA9M-unsplash.jpg"
 import Background3Image from "../app/assets/brooke-lark-jUPOXXRNdcA-unsplash.jpg";
 import Background4Image from "../app/assets/hester-qiang-95t94hZTESw-unsplash.jpg";
 import getFitImage from "../app/assets/danielle-cerullo-CQfNt66ttZM-unsplash.jpg";
+import Background5Image from "../../src/app/assets/service4jpg.jpg"
 
 export default function Home() {
   const router = useRouter();
@@ -220,6 +221,29 @@ export default function Home() {
           </p>
         </div>
       </div>
+          {/* Service 4 */}
+          <div
+        className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group cursor-pointer"
+        onClick={() => router.push("/login")}
+      >
+        <div
+          style={{ backgroundImage: `url(${Background5Image.src})` }}
+          className="w-full h-56 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
+        ></div>
+
+        {/* Overlay Effect */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="p-6 text-center relative z-10">
+          <h3 className="text-xl font-semibold text-white group-hover:text-stone-700 transition-colors duration-300">
+            Make Your Own Routine
+          </h3>
+          <p className="text-gray-300 group-hover:text-gray-100 transition-colors">
+          Popular workout plans designed by experts
+          </p>
+        </div>
+      </div>
+
+
     </div>
   </div>
 </section>
@@ -361,7 +385,7 @@ export default function Home() {
    </div>
  </div>
  <div className="text-center mt-8 text-gray-300 text-sm">
-   © 2024 by Trainify. Powered and secured by Vishnu Dixit
+   © 2025 by Trainify. Powered and secured by Vishnu Dixit
  </div>
 </footer>
 </div>
