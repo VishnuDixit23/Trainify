@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         email: user.email,
       },
       SECRET_KEY,
-      { expiresIn: "15m" }
+      { expiresIn: "30m" }
     );
 
     // Generate long-lived refresh token

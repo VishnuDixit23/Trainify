@@ -14,6 +14,9 @@ import { CardContent } from "../components/card";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import Navbar from "../components/Navbar";
+import { motion } from "framer-motion";
+import { Instagram, Facebook, Youtube, Twitter, Send } from "lucide-react";
+
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
@@ -54,7 +57,34 @@ export default function DashboardPage() {
     localStorage.removeItem("token");
     router.push("/login");
   };
-  if (!user) return <div>Loading...</div>;
+  if (!user) return <div>
+
+ <motion.div
+              className="min-h-screen flex items-center justify-center bg-black/80 backdrop-blur-md fixed inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex flex-col items-center gap-4">
+                {/* Animated Loader Ring */}
+                <motion.div
+                  className="w-16 h-16 border-t-4 border-stone-400 border-opacity-50 rounded-full animate-spin"
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                />
+        
+                {/* Loading Text Animation */}
+                <motion.p
+                  className="text-lg font-semibold text-stone-300 tracking-widest"
+                  animate={{ opacity: [0.3, 1, 0.3] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                >
+                  Loading ...
+                </motion.p>
+              </div>
+            </motion.div>
+  </div>;
 
   return (
     <>
@@ -82,7 +112,7 @@ export default function DashboardPage() {
      </p>
     
    <button 
-   className="px-6 py-3 bg-stone-400 text-white bg-opacity-75 rounded-lg shadow-lg hover:bg-neutral-900 hover:scale-105 transition-all duration-300 "
+   className="px-6 py-3 bg-gradient-to-br from-stone-700 to-stone-800 backdrop-blur-3xl  text-stone-200 font bg-opacity-75 rounded-lg shadow-lg hover:bg-neutral-900 hover:scale-105 transition-all duration-300 "
     onClick={() => {
     const section = document.getElementById("our-services");
     section?.scrollIntoView({ behavior: "smooth" });
@@ -103,7 +133,7 @@ export default function DashboardPage() {
        </h2>
        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
          {/* Testimonial 1 */}
-         <div className="bg-stone-800 p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
+         <div className="bg-gradient-to-br from-stone-900 via-black to-stone-800 backdrop-blur-2xl p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
            <div className="flex items-center mb-4">
              <span className="text-[#c2dae6] text-xl transition-transform group-hover:scale-110">
                ★★★★★
@@ -123,7 +153,7 @@ export default function DashboardPage() {
          </div>
  
          {/* Testimonial 2 */}
-         <div className="bg-stone-800 p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
+         <div className="bg-gradient-to-br from-stone-900 via-black to-stone-800 backdrop-blur-2xl p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
            <div className="flex items-center mb-4">
              <span className="text-[#c2dae6] text-xl transition-transform group-hover:scale-110">
                ★★★★★
@@ -143,7 +173,7 @@ export default function DashboardPage() {
          </div>
  
          {/* Testimonial 3 */}
-         <div className="bg-stone-800 p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
+         <div className="bg-gradient-to-br from-stone-900 via-black to-stone-800 backdrop-blur-2xl p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
            <div className="flex items-center mb-4">
              <span className="text-[#c2dae6] text-xl transition-transform group-hover:scale-110">
                ★★★★★
@@ -163,7 +193,7 @@ export default function DashboardPage() {
          </div>
  
          {/* Testimonial 4 */}
-         <div className="bg-stone-800 p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
+         <div className="bg-gradient-to-br from-stone-900 via-black to-stone-800 backdrop-blur-2xl p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
            <div className="flex items-center mb-4">
              <span className="text-[#c2dae6] text-xl transition-transform group-hover:scale-110">
                ★★★★★
@@ -184,15 +214,15 @@ export default function DashboardPage() {
        </div>
      </div>
    </section>
- 
-  <section className="bg-neutral-900 py-16">
+
+   <section className="bg-neutral-900 py-16">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <section id="our-services">
       <h2 className="text-4xl font-bold text-white mb-4 animate-fadeInUp">Our Services</h2>
     </section>
     <p className="text-lg text-gray-300 mb-10 animate-fadeInUp delay-100">Tailored for You</p>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
       {/* Service 1 */}
       <Link href="/workout-details">
         <div className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group h-full flex flex-col">
@@ -200,10 +230,7 @@ export default function DashboardPage() {
             style={{ backgroundImage: `url(${Background2Image.src})` }}
             className="w-full h-56 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
           ></div>
-
-          {/* Overlay Effect */}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
           <div className="p-6 text-center relative z-10">
             <h3 className="text-xl font-semibold text-white group-hover:text-stone-600 transition-colors duration-300">
               Designated Workouts
@@ -217,17 +244,14 @@ export default function DashboardPage() {
 
       {/* Service 2 */}
       <div
-        className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group cursor-pointer"
+        className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group cursor-pointer h-full flex flex-col"
         onClick={() => router.push("/diet-planner")}
       >
         <div
           style={{ backgroundImage: `url(${Background3Image.src})` }}
           className="w-full h-56 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
         ></div>
-
-        {/* Overlay Effect */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
         <div className="p-6 text-center relative z-10">
           <h3 className="text-xl font-semibold text-white group-hover:text-green-400 transition-colors duration-300">
             Personalised Diets
@@ -240,17 +264,14 @@ export default function DashboardPage() {
 
       {/* Service 3 */}
       <div
-        className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group cursor-pointer"
+        className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group cursor-pointer h-full flex flex-col"
         onClick={() => router.push("/TMJ")}
       >
         <div
           style={{ backgroundImage: `url(${Background4Image.src})` }}
           className="w-full h-56 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
         ></div>
-
-        {/* Overlay Effect */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
         <div className="p-6 text-center relative z-10">
           <h3 className="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors duration-300">
             Track Your Journey
@@ -263,25 +284,23 @@ export default function DashboardPage() {
           </p>
         </div>
       </div>
-          {/* Service 4 */}
-          <div
-        className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group cursor-pointer"
+
+      {/* Service 4 */}
+      <div
+        className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group cursor-pointer h-full flex flex-col"
         onClick={() => router.push("/routines")}
       >
         <div
-            style={{ backgroundImage: `url(${Background5Image.src})` }}
+          style={{ backgroundImage: `url(${Background5Image.src})` }}
           className="w-full h-56 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
         ></div>
-
-        {/* Overlay Effect */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
         <div className="p-6 text-center relative z-10">
           <h3 className="text-xl font-semibold text-white group-hover:text-stone-700 transition-colors duration-300">
             Make Your Own Routine
           </h3>
           <p className="text-gray-300 group-hover:text-gray-100 transition-colors">
-          Popular workout plans designed by experts
+            Popular workout plans designed by experts.
           </p>
         </div>
       </div>
@@ -290,9 +309,10 @@ export default function DashboardPage() {
 </section>
 
  
+ 
  <div className="bg-neutral-900 min-h-screen flex flex-col justify-between">
    {/* Header Section */}
-   <section className=" bg-neutral-900 flex flex-col md:flex-row items-center justify-between py-16 bg-[#1F2933]">
+   <section className=" bg-neutral-900 flex flex-col md:flex-row items-center justify-between py-16 ">
      {/* Image Section */}
      <div className="w-full md:w-1/2 animate-fadeInLeft relative">
        <div
@@ -332,7 +352,7 @@ export default function DashboardPage() {
        </h2>
        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
          {/* Animated Cards */}
-         <div className="text-center bg-stone-900 hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-100">
+         <div className="text-center bg-gradient-to-br from-stone-700 via-stone-900 to-stone-800 backdrop-blur-2xl hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-100">
            <h3 className="text-2xl font-semibold text-stone-400 mb-2">
              Personalized Approach
            </h3>
@@ -342,7 +362,7 @@ export default function DashboardPage() {
              specific goals and needs.
            </p>
          </div>
-         <div className="text-center bg-stone-900 hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-200">
+         <div className="text-center bg-gradient-to-br from-stone-700 via-stone-900 to-stone-800 backdrop-blur-2xl hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-200">
            <h3 className="text-2xl font-semibold text-stone-400 mb-2">
              Progress Tracking
            </h3>
@@ -351,7 +371,7 @@ export default function DashboardPage() {
              tangible results of your hard work and dedication.
            </p>
          </div>
-         <div className="text-center bg-stone-900 hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-300">
+         <div className="text-center bg-gradient-to-br from-stone-700 via-stone-900 to-stone-800 backdrop-blur-2xl hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-300">
            <h3 className="text-2xl font-semibold text-stone-400 mb-2">
              Expert Guidance
            </h3>
@@ -361,7 +381,7 @@ export default function DashboardPage() {
              results.
            </p>
          </div>
-         <div className="text-center bg-stone-900 hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-400">
+         <div className="text-center bg-gradient-to-br from-stone-700 via-stone-900 to-stone-800 backdrop-blur-2xl hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-400">
            <h3 className="text-2xl font-semibold text-stone-400 mb-2">
              Community & Support
            </h3>
@@ -379,55 +399,81 @@ export default function DashboardPage() {
    </section>
  
    {/* Footer Section */}
-   <footer className="bg-neutral-900 py-12 fontFamily: 'Questrial', sans-serif">
-   <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 text-center md:text-left">
-     {/* Left Column */}
-     <div className="mb-6 md:mb-0">
-       <p className="text-xl font-bold text-stone-400">Trainify</p>
-     </div>
- 
-     {/* Center Column */}
-     <div className="mb-6 md:mb-0">
-       <h4 className="text-lg font-semibold text-stone-400 mb-2">Legal</h4>
-       <ul className="space-y-1">
-         <li>
-           <a href="#" className="text-gray-300 hover:text-[#d3cb61bb]">
-             Privacy Policy
-           </a>
-         </li>
-         <li>
-           <a href="#" className="text-gray-300 hover:text-[#d3cb61bb]">
-             Terms & Conditions
-           </a>
-         </li>
-       </ul>
-     </div>
- 
-     {/* Right Column */}
-     <div className="text-center md:text-right">
-       <h4 className="text-lg font-semibold text-stone-400 mb-2">
-         Follow us for Updates
-       </h4>
-       <div className="flex justify-center md:justify-end space-x-4">
-         <a href="#" className="text-white hover:text-[#d3cb61bb]">
-           <i className="fab fa-instagram"></i> Instagram
-         </a>
-         <a href="#" className="text-white hover:text-[#d3cb61bb]">
-           <i className="fab fa-facebook"></i> Facebook
-         </a>
-         <a href="#" className="text-white hover:text-[#d3cb61bb]">
-           <i className="fab fa-youtube"></i> YouTube
-         </a>
-         <a href="#" className="text-white hover:text-[#d3cb61bb]">
-           <i className="fab fa-tiktok"></i> X
-         </a>
-       </div>
-     </div>
-   </div>
-   <div className="text-center mt-8 text-gray-300 text-sm">
-     © 2025 by Trainify. Powered and secured by Vishnu Dixit
-   </div>
- </footer>
+    {/* Footer Section */}
+  <footer className="bg-gradient-to-b from-neutral-900 to-black text-white py-12 border-t border-gray-800">
+  <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
+    
+    {/* Branding & About */}
+    <div className="flex flex-col space-y-3">
+      <h3 className="text-3xl font-extrabold tracking-wide text-stone-400">Trainify</h3>
+      <p className="text-gray-400 text-sm leading-relaxed">
+        Elevate your fitness with AI-powered guidance. Personalized plans, expert workouts, and seamless tracking.
+      </p>
+    </div>
+
+    {/* Navigation */}
+    <div className="flex flex-col space-y-3">
+      <h4 className="text-lg font-semibold text-white">Quick Links</h4>
+      <ul className="space-y-2 text-gray-400 text-sm">
+        <li>
+          <a href="#" className="hover:text-stone-300 transition-colors">Home</a>
+        </li>
+        <li>
+          <a href="#" className="hover:text-stone-300 transition-colors">Workout Plans</a>
+        </li>
+        <li>
+          <a href="#" className="hover:text-stone-300 transition-colors">Diet Plans</a>
+        </li>
+        <li>
+          <a href="#" className="hover:text-stone-300 transition-colors">Privacy Policy</a>
+        </li>
+        <li>
+          <a href="#" className="hover:text-stone-300 transition-colors">Terms & Conditions</a>
+        </li>
+      </ul>
+    </div>
+
+    {/* Social Media & Newsletter */}
+    <div className="flex flex-col space-y-4 text-center md:text-left">
+      <h4 className="text-lg font-semibold text-white">Follow Us</h4>
+      <div className="flex justify-center md:justify-start space-x-4">
+      <a href="#" className="text-gray-400 hover:text-yellow-400 transition-colors">
+    <Instagram size={20} />
+  </a>
+  <a href="#" className="text-gray-400 hover:text-yellow-400 transition-colors">
+    <Facebook size={20} />
+  </a>
+  <a href="#" className="text-gray-400 hover:text-yellow-400 transition-colors">
+    <Youtube size={20} />
+  </a>
+  <a href="#" className="text-gray-400 hover:text-yellow-400 transition-colors">
+    <Twitter size={20} />
+  </a>
+
+      </div>
+      
+      {/* Newsletter */}
+      <h4 className="text-lg font-semibold text-white">Stay Updated</h4>
+      <div className="flex items-center bg-stone-800 px-4 py-2 rounded-lg">
+        <input
+          type="email"
+          placeholder="Enter your email"
+          className="bg-transparent text-gray-300 text-sm outline-none flex-1"
+        />
+        <button className="text-yellow-400 hover:text-yellow-500">
+          <i className="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* Bottom Section */}
+  <div className="mt-9 text-center text-gray-400 text-sm border-t border-gray-800 pt-3">
+    © 2025 Trainify. Powered and secured by Vishnu Dixit.
+  </div>
+</footer>
+
+
  </div>
      </>
    );

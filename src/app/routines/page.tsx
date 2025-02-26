@@ -2,8 +2,11 @@
 
 import { useState,useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { motion } from "framer-motion";
+import { motion , useAnimation } from "framer-motion";
 import exercisesDataRaw from "../data/exercises.json";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useInView } from "react-intersection-observer";
 
 // Define Exercise Type
 interface Exercise {
@@ -17,6 +20,7 @@ interface Exercise {
   weight?: number;
   restTime?: number;
   notes?: string;
+  day: string; 
 }
 
 interface Routine {
@@ -37,6 +41,7 @@ const exercisesData: Exercise[] = exercisesDataRaw.map((exercise) => ({
   weight: 0,
   restTime: 60,
   notes: "",
+  day:""
 }));
 
 export default function CreateRoutinePage() {
@@ -51,7 +56,7 @@ export default function CreateRoutinePage() {
   const [currentDay, setCurrentDay] = useState("Monday");  ///
   const [routineName, setRoutineName] = useState("");
 
-
+  
   useEffect(() => {
     async function fetchRoutine() {
       setLoading(true);
@@ -73,20 +78,25 @@ export default function CreateRoutinePage() {
     fetchRoutine();
   }, []);
 
+  
+
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete your routine?")) return;
 
     try {
-      const response = await fetch("/api/delete-user-routine", {
+      const response = await fetch("/api/routines/delete-routine", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
 
       if (response.ok) {
-        alert("Routine deleted successfully!");
+        toast.success("Routine deleted successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+    });
         setRoutine(null); // Reset routine state
       } else {
-        alert("Failed to delete routine.");
+        toast.error("Failed to submit log. Try again.");
       }
     } catch (error) {
       console.error("Error deleting routine:", error);
@@ -127,7 +137,7 @@ export default function CreateRoutinePage() {
     console.log("saveRoutine function is running");
 
     if (!routineTitle.trim()) {
-      alert("Please enter a routine title.");
+      toast.error("Please enter a routine title.");
       return;
     }
 
@@ -142,7 +152,7 @@ export default function CreateRoutinePage() {
     const filteredExercises = Object.values(selectedExercises).flat().filter((ex) => ex !== undefined);
 
     if (filteredExercises.length === 0) {
-      alert("Please add exercises before saving.");
+      toast.error("Please add exercises before saving.");
       return;
     }
 
@@ -174,17 +184,19 @@ export default function CreateRoutinePage() {
       }
 
       console.log("Routine saved successfully!");
-      alert("Routine saved successfully!");
+      toast.success("Routine saved successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });;
 
       setRoutineTitle("");
       setSelectedExercises({});
     } catch (error) {
       console.error("Error saving routine:", error);
-      alert("Failed to save routine. Please try again.");
+      toast.error("Failed to save routine. Please try again.");
     }
   };
     
-
   const filteredExercises = exercisesData.filter((exercise) => {
     const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesMuscle = muscleFilter === "All" || exercise.muscleGroup === muscleFilter;
@@ -209,6 +221,7 @@ export default function CreateRoutinePage() {
           <div className="flex flex-col items-center gap-4">
             {/* Animated Loader Ring */}
             <motion.div
+            
               className="w-16 h-16 border-t-4 border-stone-400 border-opacity-50 rounded-full animate-spin"
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -227,105 +240,135 @@ export default function CreateRoutinePage() {
       </div>
     );
   }
-  
-
-  if (!existingRoutine) {
-    return (
-      <p className="text-center text-lg text-red-500">
-        No routine found.
-      </p>
-    );
-  }
-  
   return (
-    <div className="flex h-screen p-8 bg-gray-100 gap-8 text-stone-500">
-      {/* Existing Routine Section */}
-      <motion.div className="flex flex-col flex-1 bg-white p-8 rounded-2xl shadow-xl">
-        <h2 className="text-3xl font-extrabold text-stone-500 mb-4">Existing Routine</h2>
-        <p className="text-lg font-semibold">{existingRoutine?.title ?? ""}</p>
-        <ul className="mt-4">
-          {existingRoutine?.exercises?.map((ex) => (
-            <li key={ex.id || ex.name} className="bg-white p-3 rounded-lg shadow-md border mb-2">
-              <p className="font-medium text-lg">{ex.name}</p>
-              <p className="text-sm text-gray-500">{ex.muscleGroup}</p>
-              <p>{ex.sets} Sets - {ex.reps} Reps - {ex.weight} kg</p>
-            </li>
-          ))}
-        </ul>
-        <button
-          onClick={handleDelete}
-          className="mt-4 py-3 px-6 bg-red-400 text-stone-600 font-semibold rounded-lg shadow-md hover:bg-red-500 transform hover:scale-105 focus:outline-none"
+    <div className="flex flex-col min-h-screen p-8 bg-gradient-to-br from-stone-900 via-black to-stone-800 text-stone-300">
+    {existingRoutine ? (
+      <motion.div
+        className="flex-1 bg-gradient-to-br from-stone-800 via-stone-900 to-black p-6 rounded-2xl shadow-lg w-full max-w-full mx-auto"
+      >
+        <h2 className="text-3xl font-bold text-stone-300 mb-6">Existing Routine</h2>
+        <p className="text-lg font-semibold text-stone-400">{existingRoutine.title}</p>
+  
+        {/* Group exercises by day */}
+        {Object.entries(
+          existingRoutine.exercises.reduce<Record<string, Exercise[]>>((acc, ex) => {
+            if (!acc[ex.day]) acc[ex.day] = [];
+            acc[ex.day].push(ex);
+            return acc;
+          }, {})
+        ).map(([day, exercises]: [string, Exercise[]]) => (
+          <div key={day} className="mb-6">
+            <h3 className="text-2xl font-semibold text-stone-300 mb-3">{day}</h3>
+            
+            {/* Grid layout for exercises */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 place-items-center">
+       {exercises.map((ex: Exercise, index: number) => (
+        <motion.div
+      key={ex.id || index}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.1 }}
+      whileHover={{ scale: 1.05, boxShadow: "0px 0px 12px rgba(255, 255, 255, 0.2)" }}
+      className="bg-stone-700 p-4 rounded-xl border border-stone-600 shadow-md flex flex-col items-center text-center w-full max-w-sm"
+    >
+      <img
+        src={`/exercises/${ex.id}/0.jpg`}
+        alt={ex.name}
+        className="w-full h-48 rounded-lg object-cover mb-3 border"
+      />
+      <p className="font-extrabold text-2xl text-stone-300">{ex.name}</p>
+      <p className="text-stone-400">Muscle Group: {ex.muscleGroup}</p>
+      <p className="text-sm text-stone-300">{ex.sets} Sets - {ex.reps} Reps - {ex.weight} kg</p>
+    </motion.div>
+  ))}
+  </div>
+  </div>
+        ))}
+  
+        {/* Delete Button */}
+        <div className="flex justify-center mt-8">
+          <motion.button
+            onClick={handleDelete}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+             className="mt-4 py-3 px-6 bg-red-400 text-stone-600 font-semibold rounded-lg shadow-md hover:bg-red-500 transform hover:scale-105 focus:outline-none"
           >
             Delete Routine
-       
-        </button>
+          </motion.button>
+        </div>
       </motion.div>
-  
-      {/* Routine Builder */}
-      <motion.div className="flex flex-col flex-1 bg-white p-8 rounded-2xl shadow-xl">
-        <h2 className="text-3xl font-extrabold text-stone-500 mb-4">Create Routine</h2>
+    
+   
+    ) : (
+      <>
+       <div className="flex gap-8 p-6">
+      <motion.div className="flex-1 bg-gradient-to-br from-stone-700 via-stone-800 to-black  p-8 rounded-2xl shadow-lg" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <h2 className="text-3xl font-bold text-stone-300 mb-16">Create Routine</h2>
         <input
           type="text"
           placeholder="Workout Routine Title"
           value={routineTitle}
           onChange={(e) => setRoutineTitle(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="w-full p-3  text-black border border-stone-800 rounded-lg focus:ring-2 focus:ring-stone-800"
         />
-        <div className="flex gap-3 mt-4">
+        <div className="flex gap-2 mt-6">
           {daysOfWeek.map((day) => (
             <button
               key={day}
               onClick={() => setCurrentDay(day)}
-              className={`px-4 py-2 rounded-lg ${
-                currentDay === day ? "bg-stone-500 text-white" : "bg-gray-200 text-gray-600"
+              className={`px-4 py-3 rounded-lg transition-all bg-gradient-to-br from-stone-300 via-stone-400 to-stone-500 hover:bg-stone-600 hover:text-white ${
+                currentDay === day ? "bg-stone-600 text-white" : "bg-stone-200  text-gray-600"
               }`}
             >
               {day}
             </button>
           ))}
         </div>
-        <div className="border rounded-lg p-4 min-h-[200px] bg-gray-50 mt-4 text-stone-500">
+        <div className="border rounded-lg p-6 min-h-[550px] bg-stone-50 mt-14 text-stone-500">
           {selectedExercises[currentDay]?.length ? (
             selectedExercises[currentDay].map((ex) => (
               <motion.div
                 key={ex.id || ex.name}
-                className="flex items-center justify-between bg-white p-3 rounded-lg shadow-md border"
+                className="flex items-center justify-between font  md:p-6 space-y-3 bg-gradient-to-br from-stone-100 via-stone-200 to-stone-300 p-6 rounded-lg shadow-md border hover:shadow-xl transition-all mb-6"
+                whileHover={{ scale: 1.02 }}
               >
                 <div className="flex items-center">
                   <img
                     src={`/exercises/${ex.id}/0.jpg`}
                     alt={ex.name}
-                    className="w-14 h-14 rounded-lg object-cover mr-4"
+                    className="w-22 h-20 rounded-lg object-cover mr-8"
                   />
                   <div>
-                    <p className="font-medium text-lg">{ex.name}</p>
-                    <p className="text-sm text-gray-500">{ex.muscleGroup}</p>
-                    <input
-                      type="number"
-                      value={ex.sets}
-                      onChange={(e) => updateExercise(currentDay, ex.id, "sets", Number(e.target.value))}
-                      className="w-12 p-1 border rounded"
-                    />{" "}
-                    Sets
-                    <input
-                      type="number"
-                      value={ex.reps}
-                      onChange={(e) => updateExercise(currentDay, ex.id, "reps", Number(e.target.value))}
-                      className="w-12 p-1 border rounded"
-                    />{" "}
-                    Reps
-                    <input
-                      type="number"
-                      value={ex.weight}
-                      onChange={(e) => updateExercise(currentDay, ex.id, "weight", Number(e.target.value))}
-                      className="w-16 p-1 border rounded"
-                    />{" "}
-                    kg
+                    <p className="font-extrabold text-lg">Exercise name:  {ex.name}</p>
+                    <p className="text-xm text-gray-500">Muscle Group : {ex.muscleGroup}</p>
+                    <div className="flex gap-2 mt-3">
+                      <input
+                        type="number"
+                        value={ex.sets}
+                        onChange={(e) => updateExercise(currentDay, ex.id, "sets", Number(e.target.value))}
+                        className="w-10 p-1 border rounded"
+                      />
+                      Sets
+                      <input
+                        type="number"
+                        value={ex.reps}
+                        onChange={(e) => updateExercise(currentDay, ex.id, "reps", Number(e.target.value))}
+                        className="w-11 p-1 border rounded"
+                      />
+                      Reps
+                      <input
+                        type="number"
+                        value={ex.weight}
+                        onChange={(e) => updateExercise(currentDay, ex.id, "weight", Number(e.target.value))}
+                        className="w-12 p-1 border rounded"
+                      />
+                      kg
+                    </div>
                   </div>
                 </div>
                 <button
                   onClick={() => removeExercise(currentDay, ex.id)}
-                  className="text-red-500 text-sm hover:underline"
+                  className="text-red-500 text-sm hover:underline hover:text-red-700"
                 >
                   ✕ Remove
                 </button>
@@ -337,39 +380,41 @@ export default function CreateRoutinePage() {
         </div>
         <motion.button
           onClick={saveRoutine}
-          className="bg-stone-500 text-white px-5 py-3 mt-4 rounded-lg hover:bg-stone-700"
+          className="bg-stone-400 text-black  px-5 py-3 mt-4 rounded-lg hover:bg-stone-700 hover:text-white transition-all"
+          whileHover={{ scale: 1.05 }}
         >
           Save Routine
         </motion.button>
       </motion.div>
-  
+
       {/* Exercise Library */}
-      <motion.div className="w-1/3 bg-white p-8 rounded-2xl shadow-xl text-stone-500">
-        <h3 className="text-2xl font-semibold text-stone-500 mb-4">Exercise Library</h3>
+      <motion.div className="w-1/3  bg-gradient-to-br from-stone-700 via-stone-800 to-black p-8 rounded-3xl shadow text-stone-500" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <h3 className="text-2xl font-bold text-stone-300 mb-7">Exercise Library</h3>
         <input
           type="text"
           placeholder="Search Exercises..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+          className="w-full p-3 border border-gray-800 rounded-lg mb-8"
         />
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-4 mb-8">
           <select
             value={muscleFilter}
             onChange={(e) => setMuscleFilter(e.target.value)}
-            className="w-1/2 p-2 border border-gray-300 rounded-lg"
+            className="w-1/2 p-3 space-y-2 border bg-stone-100 border-gray-300 rounded-lg"
           >
-            <option value="All">All Muscle Groups</option>
-            {Array.from(new Set(exercisesData.map((ex) => ex.muscleGroup))).map((muscle) => (
-              <option key={muscle} value={muscle}>
-                {muscle}
-              </option>
-            ))}
+             <option value="All">All Muscle Groups</option>
+              {Array.from(new Set(exercisesData.map((ex) => ex.muscleGroup))).map((muscle) => (
+                <option key={muscle} value={muscle}>
+                  {muscle}
+                </option>
+              ))}
+            {/* Generate unique muscle groups */}
           </select>
           <select
             value={difficultyFilter}
             onChange={(e) => setDifficultyFilter(e.target.value)}
-            className="w-1/2 p-2 border border-gray-300 rounded-lg"
+            className="w-1/2 p-3 space-y-2 border bg-stone-100 border-gray-300 rounded-lg"
           >
             <option value="All">All Levels</option>
             <option value="Beginner">Beginner</option>
@@ -377,22 +422,23 @@ export default function CreateRoutinePage() {
             <option value="Advanced">Advanced</option>
           </select>
         </div>
-        <div className="h-96 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
+        <div className="h-[600px] overflow-y-auto border border-stone-700 rounded-lg p-4 bg-stone-100">
           {filteredExercises.map((exercise) => (
             <motion.div
               key={exercise.id}
-              className="flex items-center justify-between p-3 bg-white rounded-lg shadow-md mb-2 border"
+              className="flex items-center justify-between p-3 bg-stone-50 rounded-lg shadow-md mb-3 border hover:shadow-xl transition-all"
+              whileHover={{ scale: 1.02 }}
             >
               <div className="flex items-center">
                 <img
                   src={`/exercises/${exercise.id}/0.jpg`}
                   alt={exercise.name}
-                  className="w-12 h-12 rounded-lg object-cover mr-4"
+                  className="w-22 h-20 rounded-lg object-cover mr-6"
                 />
-                <p className="font-medium text-lg">{exercise.name}</p>
+                <p className="font-semibold text-lg">{exercise.name}</p>
               </div>
               <button
-                className="text-stone-600 font-semibold hover:underline"
+                className="text-stone-600 font-semibold hover:underline hover:text-stone-900"
                 onClick={() => addExercise(exercise)}
               >
                 + Add
@@ -401,9 +447,9 @@ export default function CreateRoutinePage() {
           ))}
         </div>
       </motion.div>
-    </div>
+      </div>
+      </>
+    )}
+  </div>
   );
-  
-  
- 
 }

@@ -32,12 +32,22 @@ const DietPlanner = () => {
     important_considerations: ImportantConsideration[];
   };
 
+  
+
   const router = useRouter();
   const [userData, setUserData] = useState(null);
   const [dietPlan, setDietPlan] = useState<DietPlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [visible, setVisible] = useState(false);
 
+  useEffect(() => {
+    const handleScroll = () => setVisible(true);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  
   const fetchDietPlan = async () => {
     setLoading(true);
     setError("");
@@ -55,6 +65,13 @@ const DietPlanner = () => {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       });
 
+      if (!userRes.ok) throw Error("Failed to fetch user data.");
+      if (userRes.status === 404) {
+        console.warn("No workout plan found for the user.");
+        setUserData(null);
+        setLoading(false); // Ensure loading is set to false
+        return;
+      }
       if (!userRes.ok) throw new Error("Failed to fetch user data.");
       const userData = await userRes.json();
       setUserData(userData);
@@ -89,7 +106,7 @@ const DietPlanner = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-stone-900 text-stone-400 p-6 flex flex-col items-center">
+    <div className="min-h-screen bg-gradient-to-br from-stone-900 via-black to-stone-800 backdrop-blur-2xl text-stone-400 p-6 w-full flex flex-col items-center">
       {loading ? (
           <motion.div
               className="min-h-screen flex items-center justify-center bg-black/80 backdrop-blur-md fixed inset-0"
@@ -118,64 +135,116 @@ const DietPlanner = () => {
             </motion.div>
        
       ) : error ? (
-        <p className="text-red-500">{error}</p>
+
+   <div className="flex items-center justify-center w-full  min-h-screen bg-gradient-to-br from-stone-900 via-black to-stone-900 backdrop-blur-2xl px-9 ">
+   <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20" style={{ backgroundImage: "url('/diet.jpg')" }}></div>
+  {/* Dark Overlay */}
+  <div className="absolute inset-0 w-full backdrop-blur-md rounded-xl bg-black/10"></div>
+
+  <div className="relative w-full max-w-3xl bg-black/10 backdrop-blur-lg rounded-2xl p-10 shadow-2xl border border-white/20 
+    transition-all duration-1000 ease-in-out transform scale-95 opacity-95 animate-fadeInUp hover:scale-105 hover:shadow-2xl">
+    
+    <h2 className="text-4xl font- text-white">
+      To Get your personalized AI-powered dietary plan 
+    </h2>
+    <p className="mt-4 text-xl text-gray-300">
+      Start by generating your detailed workout plan.
+    </p>
+    <button
+      className="mt-6 px-8 py-3 text-lg font-semibold bg-stone-600  text-stone-300 rounded-lg hover:bg-stone-900 transition-all transform hover:scale-105 shadow-md"
+      onClick={() => router.push('/workout-details')}
+    >
+      Create Workout Plan
+    </button>
+  </div>
+</div>
+       
       ) : dietPlan ? (
         <>
-          {/* 🔹 Title & Description */}
-          <h1 className="text-4xl font-bold text-center">{dietPlan.title}</h1>
-          <p className="text-center text-gray-400 mt-2 max-w-2xl">{dietPlan.description}</p>
 
-          {/* 🔹 Macronutrient Breakdown */}
-          <div className="mt-6 w-full max-w-3xl bg-stone-700 p-6 rounded-lg shadow-md border border-gray-100">
-            <h2 className="text-xl font text-white mb-3">Macronutrient Breakdown</h2>
-            <p>🔥 <span className="font-semibold text-orange-400">Calories:</span> {dietPlan.daily_caloric_intake}</p>
-            <p>🥩 <span className="font-semibold text-red-400">Protein:</span> {dietPlan.macronutrients.protein}</p>
-            <p>🍞 <span className="font-semibold text-yellow-400">Carbs:</span> {dietPlan.macronutrients.carbs}</p>
-            <p>🥑 <span className="font-semibold text-green-400">Fats:</span> {dietPlan.macronutrients.fats}</p>
+<div className="flex flex-col items-center space-y-9">
+      {/* 🔹 Title & Description */}
+      <div
+        className={`text-center transition-all duration-500 ${
+          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        }`}
+      >
+        <h1 className="text-4xl font-extrabold text-stone-300">{dietPlan.title}</h1>
+        <p className="text-stone-300 mt-4 text-xl max-w-2xl mx-auto">{dietPlan.description}</p>
+      </div>
+
+      {/* 🔹 Macronutrient Breakdown */}
+      <div
+        className={`w-full max-w-5xl bg-black/50 text-xl border text-stone-400 border-gray-700 p-8 rounded-xl backdrop-blur-lg shadow-lg hover:scale-[1.02] transition-all duration-300 ${
+          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        }`}
+      >
+        <h2 className="text-2xl font-semibold text-white mb-3">Macronutrient Breakdown</h2>
+        <p>🔥 <span className="font-semibold text-orange-400">Calories:</span> {dietPlan.daily_caloric_intake}</p>
+        <p>🥩 <span className="font-semibold text-red-400">Protein:</span> {dietPlan.macronutrients.protein}</p>
+        <p>🍞 <span className="font-semibold text-yellow-400">Carbs:</span> {dietPlan.macronutrients.carbs}</p>
+        <p>🥑 <span className="font-semibold text-green-400">Fats:</span> {dietPlan.macronutrients.fats}</p>
+      </div>
+
+      {/* 🔹 Pre & Post-Workout Meals */}
+      <div className="w-full text-xl  max-w-5xl space-y-4">
+        {["Pre-Workout Meal", "Post-Workout Meal"].map((mealType, index) => (
+          <div
+            key={index}
+            className={`bg-black/50 border border-gray-700 p-8 rounded-xl backdrop-blur-lg shadow-lg hover:scale-[1.02] transition-all duration-300 ${
+              visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
+          >
+            <h2 className="text-2xl font-semibold text-white">
+              {mealType === "Pre-Workout Meal" ? "⚡" : "💪"} {mealType}
+            </h2>
+            <p className="text-gray-300">
+              {mealType === "Pre-Workout Meal" ? dietPlan.pre_workout_meal : dietPlan.post_workout_meal}
+            </p>
           </div>
+        ))}
+      </div>
 
-          {/* 🔹 Pre & Post-Workout Meals */}
-          <div className="mt-6 w-full max-w-3xl">
-            <div className="bg-stone-700 p-4 rounded-lg mb-3 shadow-md border border-gray-100">
-              <h2 className="text-lg font text-white">⚡ Pre-Workout Meal</h2>
-              <p className="text-gray-300">{dietPlan.pre_workout_meal}</p>
-            </div>
-            <div className="bg-stone-700 p-4 rounded-lg shadow-md  border border-gray-100 ">
-              <h2 className="text-lg font-semibold text-white">💪 Post-Workout Meal</h2>
-              <p className="text-gray-300">{dietPlan.post_workout_meal}</p>
-            </div>
-          </div>
-
-          {/* 🔹 Meal Plan */}
-          <div className="mt-6 w-full max-w-3xl bg-stone-700 p-6 rounded-lg shadow-md border border-gray-100">
-            <h2 className="text-xl font text-white mb-3">Meal Plan</h2>
-            {dietPlan.meals.map((meal, index) => (
-              <div key={index} className="mt-4">
-                <h3 className="text-lg font-medium text-white underline">{meal.meal}</h3>
-                <ul className="list-disc list-inside text-gray-300">
-                  {meal.items.map((food, i) => <li key={i}>{food}</li>)}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          {/* 🔹 Important Considerations */}
-          <div className="mt-6 w-full max-w-3xl bg-stone-700 p-6 rounded-lg shadow-md border border-gray-100">
-            <h2 className="text-xl font text-white mb-3">Important Considerations</h2>
-            <ul className="list-disc list-inside text-gray-300">
-              {dietPlan.important_considerations.map((consideration, index) => (
-                <li key={index}>
-                  <span className="font-bold">{consideration.title}:</span> {consideration.details}
-                </li>
-              ))}
+      {/* 🔹 Meal Plan */}
+      <div
+        className={`w-full max-w-5xl text-xl bg-black/50 border border-gray-700 p-8 rounded-xl backdrop-blur-lg shadow-lg hover:scale-[1.02] transition-all duration-300 ${
+          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        }`}
+      >
+        <h2 className="text-3xl font-semibold text-white mb-5">Meal Plan</h2>
+        {dietPlan.meals.map((meal, index) => (
+          <div key={index} className="mt-4">
+            <h3 className="text-xm font-medium text-stone-100 underline mb-3">{meal.meal}</h3>
+            <ul className="list-disc list-inside text-stone-300 space-y-1">
+              {meal.items.map((food, i) => <li key={i}>{food}</li>)}
             </ul>
           </div>
+        ))}
+      </div>
+
+      {/* 🔹 Important Considerations */}
+      <div
+        className={`w-full max-w-5xl text-xl bg-black/50 border border-gray-700 p-8 rounded-xl backdrop-blur-lg shadow-lg hover:scale-[1.02] transition-all duration-300 ${
+          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        }`}
+      >
+        <h2 className="text-2xl font-semibold  text-stone-200 mb-3">Important Considerations</h2>
+        <ul className="list-disc list-inside text-stone-300 space-y-2">
+          {dietPlan.important_considerations.map((consideration, index) => (
+            <li key={index}>
+              <span className="font-bold">{consideration.title}:</span> {consideration.details}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+          
 
           {/* 🔹 Buttons */}
           <div className="mt-8 flex justify-center space-x-4">
             <button
               onClick={() => router.push("/dashboard")}
-              className="bg-stone-600 hover:bg-stone-800 px-6 py-3 rounded-lg font text-stone-200 shadow-lg"
+              className="bg-stone-600 hover:bg-stone-800 px-6 py-3 rounded-lg font text-stone-300 shadow-lg"
             >
                Back to Dashboard
             </button>

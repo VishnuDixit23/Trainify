@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Name, email, and password are required" }, { status: 400 });
     }
 
-    const { db } = await connectToDatabase(); // ✅ Get db instance
+    const db  = await connectToDatabase(); // ✅ Get db instance
     const existingUser = await db.collection("users").findOne({ email });
     if (existingUser) {
       return NextResponse.json({ message: "User already exists" }, { status: 400 });
