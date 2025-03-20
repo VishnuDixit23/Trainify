@@ -3,7 +3,10 @@ import { promises as fs } from "fs";
 import path from "path";
 import { connectToDatabase } from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
-import Routine from "../../../../lib/Routine";
+import * as Routine from "@/lib/Routine"; // ✅ If you need all functions
+import { createRoutine, getRoutineByUserId, deleteRoutineByUserId } from "@/lib/Routine"; // ✅ Use named imports
+
+
 
 interface DecodedToken {
   userId: string;
@@ -103,13 +106,16 @@ export async function POST(req: NextRequest) {
     }));
 
     // Save to database
-    const newRoutine = new Routine({
+
+    const newRoutine = {
       userId,
       routineName,
       exercises: generatedWorkout,
-    });
-    await newRoutine.save();
-
+    };
+    
+    const result = await createRoutine(newRoutine); // ✅ Use createRoutine function
+    
+  
     return NextResponse.json({ message: "Workout created successfully", workout: newRoutine }, { status: 201 });
   } catch (error) {
     console.error(error);

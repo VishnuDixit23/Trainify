@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
-import Routine from "../../../../lib/Routine";
+import { createRoutine, getRoutineByUserId, deleteRoutineByUserId } from "@/lib/Routine"; // ✅ Use named imports
+
+
+
 
 interface DecodedToken {
   userId: string;
@@ -54,7 +57,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // Find and update the routine
-    const updatedRoutine = await Routine.findOneAndUpdate(
+    const updatedRoutine = await routineId.findOneAndUpdate(
       { _id: routineId, userId }, // Ensure the routine belongs to the user
       { routineName, exercises },
       { new: true }

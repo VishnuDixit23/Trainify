@@ -212,7 +212,7 @@ const saveLog = async () => {
         <td className="p-4 border">
           <img
             src={`/exercises/${exercise.exercise.replace(/\s+/g, '_')}/0.jpg`} 
-            alt={"Exercise Image"}
+            alt={"Soon"}
             className="w-16 h-16 object-cover rounded-lg shadow-md border border-stone-600"
           />
         </td>

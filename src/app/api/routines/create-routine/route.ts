@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
-import { createRoutine, getRoutineByUserId } from "@/lib/Routine"; // Use new functions
+import { createRoutine, getRoutineByUserId } from "../../../../lib/Routine"; // Use new functions
 
 interface DecodedToken {
   userId: string;
