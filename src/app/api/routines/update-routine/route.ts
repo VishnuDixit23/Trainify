@@ -4,8 +4,6 @@ import jwt from "jsonwebtoken";
 import { createRoutine, getRoutineByUserId, deleteRoutineByUserId } from "@/lib/Routine"; // ✅ Use named imports
 
 
-
-
 interface DecodedToken {
   userId: string;
   iat?: number;
