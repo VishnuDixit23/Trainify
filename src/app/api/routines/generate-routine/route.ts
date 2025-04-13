@@ -4,7 +4,7 @@ import path from "path";
 import { connectToDatabase } from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
 import * as Routine from "@/lib/Routine"; // ✅ If you need all functions
-import { createRoutine, getRoutineByUserId, deleteRoutineByUserId } from "../../../../lib/Routine"; // ✅ Use named imports
+import { createRoutine, getRoutineByUserId, deleteRoutineByUserId } from "@/lib/Routine"; // ✅ Use named imports
 
 
 
