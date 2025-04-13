@@ -312,34 +312,34 @@ export default function DashboardPage() {
  
  <div className="bg-neutral-900 min-h-screen flex flex-col justify-between">
    {/* Header Section */}
-   <section className=" bg-neutral-900 flex flex-col md:flex-row items-center justify-between py-16 ">
-     {/* Image Section */}
-     <div className="w-full md:w-1/2 animate-fadeInLeft relative">
-       <div
-         style={{
-           backgroundImage: `url(${getFitImage.src})`,
-         }}
-         className="ml-20 w-5/6 h-[300px] md:h-[400px] bg-cover bg-center shadow-lg rounded-lg"
-         aria-label="Gym Equipment"
-       ></div>
-     </div>
- 
-     {/* Text Section */}
-     <div className="w-full md:w-1/2 px-8 animate-fadeInRight">
-       <h1 className="text-4xl font-bold text-white mb-4">
-         Discover Trainify Now
-       </h1>
-       <h2 className="text-6xl font-extrabold text-stone-500 mb-6 ">
-         Get Fit
-       </h2>
-       <p className="text-lg text-gray-300 mb-8">
-         Trainify – Your AI-Powered Fitness Companion. Personalized workout
-         plans, progress tracking, and expert guidance, all tailored to your
-         goals. Start your fitness journey today!
-       </p>
-       
-     </div>
-   </section>
+   <section className=" bg-neutral-900 flex flex-col md:flex-row items-center justify-between py-16 bg-[#1F2933]">
+  {/* Image Section */}
+  <div className="w-full md:w-1/2 animate-fadeInLeft flex justify-center mb-10 md:mb-0">
+    <div
+      style={{
+        backgroundImage: `url(${getFitImage.src})`,
+      }}
+      className="w-5/6 h-[300px] md:h-[400px] bg-cover bg-center shadow-lg rounded-lg"
+      aria-label="Gym Equipment"
+    ></div>
+  </div>
+
+  {/* Text Section */}
+  <div className="w-full md:w-1/2 px-6 md:px-8 animate-fadeInRight text-center md:text-left">
+    <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+      Discover Trainify Now
+    </h1>
+    <h2 className="text-5xl md:text-6xl font-extrabold text-stone-500 mb-6">
+      Get Fit
+    </h2>
+    <p className="text-base md:text-lg text-gray-300 mb-8">
+      Trainify – Your AI-Powered Fitness Companion. Personalized workout
+      plans, progress tracking, and expert guidance, all tailored to your
+      goals. Start your fitness journey today!
+    </p>
+  </div>
+</section>
+
  
  
    {/* Why Trainify Section */}

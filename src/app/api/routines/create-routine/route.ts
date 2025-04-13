@@ -37,20 +37,30 @@ export async function POST(req: NextRequest) {
   try {
     if (!process.env.JWT_SECRET) {
       console.error("🚨 Environment Variable JWT_SECRET is not set.");
-      return NextResponse.json({ success: false, error: "Server configuration error" }, { status: 500 });
+      return NextResponse.json(
+        { success: false, error: "Server configuration error" },
+        { status: 500 }
+      );
     }
 
     // 🔹 Extract & verify auth token
-    const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
+    const authHeader =
+      req.headers.get("Authorization") || req.headers.get("authorization");
     if (!authHeader) {
       console.warn("❌ No Authorization header provided.");
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 403 }
+      );
     }
 
     const decodedToken = verifyToken(authHeader);
     if (!decodedToken?.userId) {
       console.warn("❌ Invalid or expired JWT token.");
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 403 }
+      );
     }
 
     const db = await connectToDatabase();
@@ -62,7 +72,10 @@ export async function POST(req: NextRequest) {
 
     if (!routineName || !Array.isArray(exercises) || exercises.length === 0) {
       console.warn("❌ Invalid routine data: Missing name or exercises.");
-      return NextResponse.json({ error: "Invalid routine data" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid routine data" },
+        { status: 400 }
+      );
     }
 
     const userId = decodedToken.userId;
@@ -70,19 +83,31 @@ export async function POST(req: NextRequest) {
     // 🔹 Check if routine already exists
     const existingRoutine = await getRoutineByUserId(userId);
     if (existingRoutine) {
-      console.warn(`⚠️ Routine '${routineName}' already exists for user '${userId}'.`);
-      return NextResponse.json({ error: "Routine with this name already exists" }, { status: 409 });
+      console.warn(
+        `⚠️ Routine '${routineName}' already exists for user '${userId}'.`
+      );
+      return NextResponse.json(
+        { error: "Routine with this name already exists" },
+        { status: 409 }
+      );
     }
 
     // 🔹 Create & save routine
     const newRoutine = { userId, routineName, exercises };
     const result = await createRoutine(newRoutine);
 
-    console.log(`✅ Routine '${routineName}' created successfully for user '${userId}'.`);
-    return NextResponse.json({ message: "Routine created successfully", routine: result }, { status: 201 });
-
+    console.log(
+      `✅ Routine '${routineName}' created successfully for user '${userId}'.`
+    );
+    return NextResponse.json(
+      { message: "Routine created successfully", routine: result },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("🚨 Server Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
