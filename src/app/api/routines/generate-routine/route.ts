@@ -4,9 +4,11 @@ import path from "path";
 import { connectToDatabase } from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
 import * as Routine from "@/lib/Routine"; // ✅ If you need all functions
-import { createRoutine, getRoutineByUserId, deleteRoutineByUserId } from "@/lib/Routine"; // ✅ Use named imports
-
-
+import {
+  createRoutine,
+  getRoutineByUserId,
+  deleteRoutineByUserId,
+} from "@/lib/Routine"; // ✅ Use named imports
 
 interface DecodedToken {
   userId: string;
@@ -38,7 +40,13 @@ const verifyToken = (authHeader: string | null): DecodedToken | null => {
 
 // Function to load and filter exercises
 const loadExercises = async (filterExercises: string[] | null) => {
-  const filePath = path.join(process.cwd(), "src", "app", "data", "exercises.json");
+  const filePath = path.join(
+    process.cwd(),
+    "src",
+    "app",
+    "data",
+    "exercises.json"
+  );
   const fileContent = await fs.readFile(filePath, "utf-8");
   const allExercises = JSON.parse(fileContent);
 
@@ -59,13 +67,19 @@ export async function POST(req: NextRequest) {
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
       console.log("❌ No Authorization header");
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 403 }
+      );
     }
 
     const decodedToken = verifyToken(authHeader);
     if (!decodedToken?.userId) {
       console.log("❌ Invalid token");
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 403 }
+      );
     }
 
     const db = await connectToDatabase();
@@ -74,11 +88,16 @@ export async function POST(req: NextRequest) {
     // Extract request body
     const { routineName, exercises, difficulty } = await req.json();
     if (!routineName || !exercises || exercises.length === 0) {
-      return NextResponse.json({ error: "Missing workout data" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing workout data" },
+        { status: 400 }
+      );
     }
 
     // Load and filter exercises from JSON
-    const filteredExercises = await loadExercises(exercises.map((e: string) => e.toLowerCase()));
+    const filteredExercises = await loadExercises(
+      exercises.map((e: string) => e.toLowerCase())
+    );
 
     // Default difficulty settings
     const difficultyLevels = {
@@ -88,10 +107,16 @@ export async function POST(req: NextRequest) {
     } as const;
 
     type Difficulty = keyof typeof difficultyLevels;
-    const validDifficulties: Difficulty[] = ["beginner", "intermediate", "advanced"];
+    const validDifficulties: Difficulty[] = [
+      "beginner",
+      "intermediate",
+      "advanced",
+    ];
 
     // Validate difficulty level
-    const selectedDifficulty: Difficulty = validDifficulties.includes(difficulty?.toLowerCase() as Difficulty)
+    const selectedDifficulty: Difficulty = validDifficulties.includes(
+      difficulty?.toLowerCase() as Difficulty
+    )
       ? (difficulty.toLowerCase() as Difficulty)
       : "beginner";
 
@@ -112,13 +137,18 @@ export async function POST(req: NextRequest) {
       routineName,
       exercises: generatedWorkout,
     };
-    
+
     const result = await createRoutine(newRoutine); // ✅ Use createRoutine function
-    
-  
-    return NextResponse.json({ message: "Workout created successfully", workout: newRoutine }, { status: 201 });
+
+    return NextResponse.json(
+      { message: "Workout created successfully", workout: newRoutine },
+      { status: 201 }
+    );
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

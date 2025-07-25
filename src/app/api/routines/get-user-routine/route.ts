@@ -30,12 +30,18 @@ export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 403 }
+      );
     }
 
     const decodedToken = verifyToken(authHeader);
     if (!decodedToken?.userId) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 403 }
+      );
     }
 
     await connectToDatabase();
@@ -45,18 +51,32 @@ export async function GET(req: NextRequest) {
     const routine = await getRoutineByUserId(userId);
 
     if (!routine) {
-      return NextResponse.json({ message: "No routine found", hasRoutine: false }, { status: 404 });
+      return NextResponse.json(
+        { message: "No routine found", hasRoutine: false },
+        { status: 404 }
+      );
     }
 
-    const enrichedExercises = routine.exercises.map((exercise: { exerciseName: string }) => {
-      const foundExercise = exercisesData.find((ex) => ex.name === exercise.exerciseName);
-      return foundExercise ? { ...exercise, details: foundExercise } : exercise;
-    });
+    const enrichedExercises = routine.exercises.map(
+      (exercise: { exerciseName: string }) => {
+        const foundExercise = exercisesData.find(
+          (ex) => ex.name === exercise.exerciseName
+        );
+        return foundExercise
+          ? { ...exercise, details: foundExercise }
+          : exercise;
+      }
+    );
 
-    return NextResponse.json({ hasRoutine: true, ...routine, exercises: enrichedExercises }, { status: 200 });
-
+    return NextResponse.json(
+      { hasRoutine: true, ...routine, exercises: enrichedExercises },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("🚨 Server Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

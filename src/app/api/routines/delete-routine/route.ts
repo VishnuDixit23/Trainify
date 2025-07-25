@@ -37,12 +37,18 @@ export async function DELETE(req: NextRequest) {
     // 🔹 Extract & verify auth token
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 403 }
+      );
     }
 
     const decodedToken = verifyToken(authHeader);
     if (!decodedToken?.userId) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 403 }
+      );
     }
 
     const userId = decodedToken.userId;
@@ -54,14 +60,22 @@ export async function DELETE(req: NextRequest) {
 
     if (!isDeleted) {
       console.warn(`⚠️ No routine found for user '${userId}' to delete.`);
-      return NextResponse.json({ success: false, message: "No routine found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, message: "No routine found" },
+        { status: 404 }
+      );
     }
 
     console.log(`✅ Routine deleted successfully for user '${userId}'.`);
-    return NextResponse.json({ success: true, message: "Routine deleted successfully" }, { status: 200 });
-
+    return NextResponse.json(
+      { success: true, message: "Routine deleted successfully" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("🚨 Server Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
