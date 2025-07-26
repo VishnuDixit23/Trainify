@@ -3,12 +3,12 @@ import { promises as fs } from "fs";
 import path from "path";
 import { connectToDatabase } from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
-import * as Routine from "@/lib/Routine"; // ✅ If you need all functions
+import * as Routine from "@/lib/routine"; // ✅ If you need all functions
 import {
   createRoutine,
   getRoutineByUserId,
   deleteRoutineByUserId,
-} from "@/lib/Routine"; // ✅ Use named imports
+} from "@/lib/routine"; // ✅ Use named imports
 
 interface DecodedToken {
   userId: string;
