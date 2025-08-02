@@ -1,18 +1,19 @@
-import { NextApiRequest, NextApiResponse } from "next";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method Not Allowed" });
-  }
+export const POST = async (req: NextRequest) => {
+  const response = NextResponse.json({ message: 'Logged out successfully' });
 
-  try {
-    res.setHeader(
-      "Set-Cookie",
-      "token=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict; Secure"
-    );
-    return res.status(200).json({ message: "Logged out successfully" });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-}
+  response.cookies.set({
+    name: 'token',
+    value: '',
+    httpOnly: true,
+    path: '/',
+    maxAge: 0,
+    sameSite: 'strict',
+    secure: true,
+  });
+
+  return response;
+};
