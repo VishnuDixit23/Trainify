@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
@@ -8,22 +9,18 @@ import { motion } from "framer-motion";
 
 const WorkoutDetailsPage: React.FC = () => {
   const searchParams = useSearchParams();
-  const initialWorkoutPlan = JSON.parse(
-    searchParams.get("workoutPlan") || "{}"
-  );
+  const initialWorkoutPlan = JSON.parse(searchParams.get("workoutPlan") || "{}");
   const [workoutPlan] = useState(initialWorkoutPlan);
   const [, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const decoded: any = jwtDecode(token);
-          setUserId(decoded.userId);
-        } catch (error) {
-          console.error("Error decoding token:", error);
-        }
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        setUserId(decoded.userId);
+      } catch (error) {
+        console.error("Error decoding token:", error);
       }
     }
   }, []);
@@ -38,7 +35,6 @@ const WorkoutDetailsPage: React.FC = () => {
       <h2 className="text-3xl font-semibold mb-4">Your Workout Plan</h2>
 
       <div className="space-y-6">
-        {/* Plan Title & Description */}
         <motion.div
           className="p-8 bg-black/50 border border-stone-700 rounded-xl backdrop-blur-lg shadow-lg transition-all duration-500 hover:scale-[1.02]"
           initial={{ opacity: 0, y: 10 }}
@@ -52,9 +48,8 @@ const WorkoutDetailsPage: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Warm-up & Cool-down Sections */}
+        {/* Warm-up & Cool-down */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {/* Warm-up */}
           <motion.div
             className="p-6 bg-black/50 border border-stone-700 rounded-xl backdrop-blur-lg shadow-lg transition-all duration-500 hover:scale-[1.02]"
             initial={{ opacity: 0, y: 10 }}
@@ -79,7 +74,6 @@ const WorkoutDetailsPage: React.FC = () => {
             )}
           </motion.div>
 
-          {/* Cool-down */}
           <motion.div
             className="p-6 bg-black/50 border border-stone-700 rounded-xl backdrop-blur-lg shadow-lg transition-all duration-500 hover:scale-[1.02]"
             initial={{ opacity: 0, y: 10 }}
@@ -105,7 +99,7 @@ const WorkoutDetailsPage: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Workout Schedule */}
+        {/* Schedule */}
         <motion.div
           className="p-8 bg-gradient-to-br from-stone-900 via-black to-stone-800 rounded-xl shadow-2xl border border-stone-700 transition-all duration-500"
           initial={{ opacity: 0, y: 10 }}
@@ -150,7 +144,7 @@ const WorkoutDetailsPage: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Back to Dashboard Button */}
+      {/* Back Button */}
       <motion.button
         onClick={() => router.push("/dashboard")}
         className="mt-8 w-1/5 py-3 px-6 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transform hover:scale-105 focus:outline-none"
