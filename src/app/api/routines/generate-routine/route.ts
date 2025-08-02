@@ -1,14 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
-import { connectToDatabase } from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
-import * as routine from "@/lib/routine"; // ✅ If you need all functions
-import {
-  createRoutine,
-  getRoutineByUserId,
-  deleteRoutineByUserId,
-} from "@/lib/routine"; // ✅ Use named imports
 
 interface DecodedToken {
   userId: string;
@@ -82,7 +76,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const db = await connectToDatabase();
     const userId = decodedToken.userId;
 
     // Extract request body
@@ -138,7 +131,6 @@ export async function POST(req: NextRequest) {
       exercises: generatedWorkout,
     };
 
-    const result = await createRoutine(newRoutine); // ✅ Use createRoutine function
 
     return NextResponse.json(
       { message: "Workout created successfully", workout: newRoutine },

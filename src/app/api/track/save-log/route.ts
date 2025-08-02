@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "../../../../lib/mongodb";
-import loggedWorkout from "@/lib/loggedWorkout";
 import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {

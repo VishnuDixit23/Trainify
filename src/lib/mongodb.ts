@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { MongoClient, Db } from "mongodb";
 
 const uri = process.env.MONGODB_URI as string; // Ensure this is set in `.env.local`

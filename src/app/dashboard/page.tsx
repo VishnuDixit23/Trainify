@@ -1,26 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Head from "next/head";
 import BackgroundImage from "../assets/valery-sysoev-qMWEzISL1p0-unsplash.jpg";
 import Background2Image from "../assets/sven-mieke-Lx_GDv7VA9M-unsplash.jpg";
 import Background3Image from "../assets/brooke-lark-jUPOXXRNdcA-unsplash.jpg";
 import Background4Image from "../assets/hester-qiang-95t94hZTESw-unsplash.jpg";
 import getFitImage from "../assets/danielle-cerullo-CQfNt66ttZM-unsplash.jpg";
 import Background5Image from "../../app/assets/service4jpg.jpg"
-import wtImage from "../assets/daniel-apodaca-WdoQio6HPVA-unsplash.jpg";
 import Link from "next/link";
-import { CardContent } from "../components/card";
-import { Button } from "../components/button";
-import { Card } from "../components/card";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
-import { Instagram, Facebook, Youtube, Twitter, Send } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter } from "lucide-react";
 
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -53,10 +49,6 @@ export default function DashboardPage() {
     fetchUser();
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/login");
-  };
   if (!user) return <div>
 
  <motion.div
@@ -143,8 +135,8 @@ export default function DashboardPage() {
              Amazing Experience
            </h3>
            <p className="text-gray-300 mb-4 group-hover:text-white transition-colors">
-             Trainify has transformed my fitness journey. I'm now more motivated
-             and focused than ever before. It's like having a personal trainer in
+             Trainify has transformed my fitness journey. I&aposm now more motivated
+             and focused than ever before. It&aposs like having a personal trainer in
              my pocket!
            </p>
            <p className="text-gray-400 text-sm group-hover:text-[#d3cb61bb] transition-colors">
@@ -183,9 +175,9 @@ export default function DashboardPage() {
              Life-Changing
            </h3>
            <p className="text-gray-300 mb-4 group-hover:text-white transition-colors">
-             Trainify's AI-powered workouts have completely changed my
+              Trainify&rsquo;s AI-powered workouts have completely changed my
              perspective on fitness. I feel healthier, stronger, and more
-             confident. Thank you, Trainify!
+            confident. Thank you, Trainify!
            </p>
            <p className="text-gray-400 text-sm group-hover:text-[#d3cb61bb] transition-colors">
              Adam Johnson, TX
@@ -203,9 +195,9 @@ export default function DashboardPage() {
              Highly Recommended
            </h3>
            <p className="text-gray-300 mb-4 group-hover:text-white transition-colors">
-             I've recommended Trainify to all my friends and family. The results
-             speak for themselves, and the personalized approach is truly
-             remarkable.
+             I&rsquo;ve recommended Trainify to all my friends and family. The results
+            speak for themselves, and the personalized approach is truly
+            remarkable.
            </p>
            <p className="text-gray-400 text-sm group-hover:text-[#d3cb61bb] transition-colors">
              Sarah Parker, FL
@@ -357,8 +349,8 @@ export default function DashboardPage() {
              Personalized Approach
            </h3>
            <p className="text-gray-300">
-             Trainify's AI provides a personalized approach to your fitness
-             journey, ensuring that every workout plan is tailored to your
+              Trainify&rsquo;s AI provides a personalized approach to your fitness
+            journey, ensuring that every workout plan is tailored to your
              specific goals and needs.
            </p>
          </div>

@@ -1,9 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
-import backgroundImage from '../app/components/hannes-egler-a9zeXX25lC8-unsplash.jpg';
-import background2Image from '../app/components/clark-tibbs-oqStl2L5oxI-unsplash.jpg';
 import Landbar from "../app/assets/Landbar";
 import BackgroundImage from "../app/assets/valery-sysoev-qMWEzISL1p0-unsplash.jpg"
 import Background2Image from "../app/assets/sven-mieke-Lx_GDv7VA9M-unsplash.jpg";
@@ -11,7 +8,7 @@ import Background3Image from "../app/assets/brooke-lark-jUPOXXRNdcA-unsplash.jpg
 import Background4Image from "../app/assets/hester-qiang-95t94hZTESw-unsplash.jpg";
 import getFitImage from "../app/assets/danielle-cerullo-CQfNt66ttZM-unsplash.jpg";
 import Background5Image from "../../src/app/assets/service4jpg.jpg"
-import { Instagram, Facebook, Youtube, Twitter, Send } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter } from "lucide-react";
 
 
 export default function Home() {
@@ -73,8 +70,8 @@ export default function Home() {
              Amazing Experience
            </h3>
            <p className="text-gray-300 mb-4 group-hover:text-white transition-colors">
-             Trainify has transformed my fitness journey. I'm now more motivated
-             and focused than ever before. It's like having a personal trainer in
+             Trainify has transformed my fitness journey. I&rsquo;m now more motivated
+             and focused than ever before. It&rsquo;s like having a personal trainer in
              my pocket!
            </p>
            <p className="text-gray-400 text-sm group-hover:text-[#d3cb61bb] transition-colors">
@@ -113,7 +110,7 @@ export default function Home() {
              Life-Changing
            </h3>
            <p className="text-gray-300 mb-4 group-hover:text-white transition-colors">
-             Trainify's AI-powered workouts have completely changed my
+             Trainify&rsquo;s AI-powered workouts have completely changed my
              perspective on fitness. I feel healthier, stronger, and more
              confident. Thank you, Trainify!
            </p>
@@ -133,7 +130,7 @@ export default function Home() {
              Highly Recommended
            </h3>
            <p className="text-gray-300 mb-4 group-hover:text-white transition-colors">
-             I've recommended Trainify to all my friends and family. The results
+             I&rsquo;ve recommended Trainify to all my friends and family. The results
              speak for themselves, and the personalized approach is truly
              remarkable.
            </p>
@@ -285,7 +282,7 @@ export default function Home() {
              Personalized Approach
            </h3>
            <p className="text-gray-300">
-             Trainify's AI provides a personalized approach to your fitness
+             Trainify&rsquo;s AI provides a personalized approach to your fitness
              journey, ensuring that every workout plan is tailored to your
              specific goals and needs.
            </p>

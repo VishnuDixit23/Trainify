@@ -1,7 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
 //import clientPromise from '../../../lib/mongodb';
-const uri = process.env.MONGODB_URI;
-import { MongoClient } from "mongodb";
 
 export async function GET() {
     try {

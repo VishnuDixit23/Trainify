@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Moon, Sun } from "lucide-react";
 import { motion } from "framer-motion";
 
 const RegisterPage = () => {
@@ -11,7 +10,7 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+  const [, setDarkMode] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -19,13 +18,7 @@ const RegisterPage = () => {
     setDarkMode(storedTheme === "dark");
   }, []);
 
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => {
-      const newTheme = !prev;
-      localStorage.setItem("theme", newTheme ? "dark" : "light");
-      return newTheme;
-    });
-  };
+ 
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +57,7 @@ const RegisterPage = () => {
     {/* Form Section */}
     <div className="w-full md:w-1/2 p-10 flex flex-col justify-center bg-gradient-to-br from-stone-700 via-black to-stone-900 bg-opacity-80 backdrop-blur-md">
       <h2 className="text-3xl font-bold text-gray-200 text-center">Create an account</h2>
-      <p className="text-gray-300 text-center mt-2">It's easy! Just take a minute and provide your details.</p>
+      <p className="text-gray-300 text-center mt-2">It&rsquo;s easy! Just take a minute and provide your details.</p>
       {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
 
       <motion.form
@@ -138,7 +131,7 @@ const RegisterPage = () => {
       />
       <div className="absolute bottom-6 left-6 text-stone-200 text-lg font-light bg-black bg-opacity-50 p-3 rounded-md">
         <motion.p initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
-          "The pain of discipline is temporary, but the results of consistency are forever."
+          The pain of discipline is temporary, but the results of consistency are forever.
         </motion.p>
       </div>
     </motion.div>

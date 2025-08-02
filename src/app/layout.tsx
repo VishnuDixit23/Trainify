@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AnimatePresence, motion } from "framer-motion";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

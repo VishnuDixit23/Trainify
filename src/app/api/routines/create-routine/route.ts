@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
 import { createRoutine, getRoutineByUserId } from "@/lib/routine"; // Use new functions
 
@@ -63,7 +62,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const db = await connectToDatabase();
     console.log("✅ Database connected.");
 
     // 🔹 Extract request data

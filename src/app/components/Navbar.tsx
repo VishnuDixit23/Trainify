@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaUserCircle } from "react-icons/fa";

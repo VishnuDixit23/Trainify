@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { HiMenu, HiX } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function LandingNavbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {

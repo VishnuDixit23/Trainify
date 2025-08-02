@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "../../../lib/mongodb";
 import loggedWorkout from "@/lib/loggedWorkout";

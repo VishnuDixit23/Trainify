@@ -35,7 +35,7 @@ const DietPlanner = () => {
   
 
   const router = useRouter();
-  const [userData, setUserData] = useState(null);
+  const [, setUserData] = useState(null);
   const [dietPlan, setDietPlan] = useState<DietPlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

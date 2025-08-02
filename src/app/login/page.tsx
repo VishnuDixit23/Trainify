@@ -66,7 +66,7 @@ const LoginPage = () => {
       TRAINIFY <span className="text-stone-800">POWERED BY</span> AN AI TRAINER.
     </h1>
     <p className="mt-4 text-base md:text-lg text-stone-800 dark:text-stone-800">
-      "Don't wait for motivation, create it with consistent action."
+      Don&rsquo;t wait for motivation, create it with consistent action.
     </p>
     <Link
       href="/register"
