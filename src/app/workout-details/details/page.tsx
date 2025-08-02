@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import router, { useRouter } from "next/router";
+import router from "next/router";
 import { motion } from "framer-motion";
 
 const WorkoutDetailsPage: React.FC = () => {
@@ -10,8 +11,8 @@ const WorkoutDetailsPage: React.FC = () => {
   const initialWorkoutPlan = JSON.parse(
     searchParams.get("workoutPlan") || "{}"
   );
-  const [workoutPlan, setWorkoutPlan] = useState(initialWorkoutPlan);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [workoutPlan] = useState(initialWorkoutPlan);
+  const [, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {

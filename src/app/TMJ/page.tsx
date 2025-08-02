@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -154,7 +155,7 @@ const saveLog = async () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-900 via-black to-stone-800 backdrop-blur-2xl text-white p-6">
     <h1 className="text-3xl font-extrabold mb-4">Track My Journey</h1>
-    <h1 className="text-3xl items-center justify-center text-center p-6 font mb-8 font-bold">Your Today's Routine</h1>
+    <h1 className="text-3xl items-center justify-center text-center p-6 font mb-8 font-bold">Your Today Routine</h1>
 
     {loading ? (
       <motion.div

@@ -52,7 +52,7 @@ interface Exercise {
   }
   
   // Ensure TypeScript knows what types we're dealing with
-  let comparisonResults = plannedExercises.map((planned: Exercise) => {
+  const comparisonResults = plannedExercises.map((planned: Exercise) => {
     const match = loggedExercises.find((logged: Exercise) => logged.exercise === planned.exercise);
   
     if (!match) {

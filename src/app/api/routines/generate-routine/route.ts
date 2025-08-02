@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { connectToDatabase } from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
-import * as Routine from "@/lib/routine"; // ✅ If you need all functions
+import * as routine from "@/lib/routine"; // ✅ If you need all functions
 import {
   createRoutine,
   getRoutineByUserId,

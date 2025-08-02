@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { motion, useAnimation } from "framer-motion";
+import { motion } from "framer-motion";
 import exercisesDataRaw from "../data/exercises.json";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useInView } from "react-intersection-observer";
 
 // Define Exercise Type
 interface Exercise {
@@ -56,7 +55,7 @@ export default function CreateRoutinePage() {
   const [muscleFilter, setMuscleFilter] = useState("All");
   const [difficultyFilter, setDifficultyFilter] = useState("All");
   const [currentDay, setCurrentDay] = useState("Monday"); ///
-  const [routineName, setRoutineName] = useState("");
+  
 
   useEffect(() => {
     async function fetchRoutine() {
@@ -130,6 +129,7 @@ export default function CreateRoutinePage() {
     day: string,
     id: string,
     field: keyof Exercise,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any
   ) => {
     setSelectedExercises((prev) => ({

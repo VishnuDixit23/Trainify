@@ -11,10 +11,12 @@ export async function DELETE(req: Request) {
     }
 
     const token = authHeader.split(" ")[1]; // Extract token
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let decodedToken: any;
 
     try {
       decodedToken = jwt.verify(token, process.env.JWT_SECRET as string); // Decode JWT
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return NextResponse.json({ error: "Unauthorized: Invalid token" }, { status: 403 });
     }

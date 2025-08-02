@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
@@ -15,6 +16,7 @@ export async function POST(req: Request) {
 
     // Find the requested exercise
     const matchedExercise = exercises.find(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (ex: any) => ex.name.toLowerCase() === exercise.toLowerCase()
     );
 

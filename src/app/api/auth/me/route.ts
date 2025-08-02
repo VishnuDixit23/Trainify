@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
     console.log("Decoded user data:", decoded);
 
     return NextResponse.json({ user: decoded }, { status: 200 });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Error in /api/auth/me:", error.message);
 
