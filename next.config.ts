@@ -5,9 +5,7 @@ const nextConfig: NextConfig = {
   compiler: {
     styledComponents: true,
   },
-  devIndicators: {
-    buildActivity: false, // Hide build activity indicator
-  },
+
 };
 
 export default nextConfig;
