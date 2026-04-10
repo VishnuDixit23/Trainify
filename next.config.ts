@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   devIndicators: {
     buildActivity: false, // Hide build activity indicator
   },
+  experimental: {
+    turbopack: {}
+  },
   webpack: (config, { dev }) => {
     if (dev) {
       config.devServer = {
