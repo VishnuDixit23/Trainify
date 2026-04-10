@@ -1,144 +1,242 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { Eye, EyeOff, Zap, ArrowRight, Check } from "lucide-react";
 
 const RegisterPage = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [, setDarkMode] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    setDarkMode(storedTheme === "dark");
-  }, []);
-
- 
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    const data = await res.json();
-    if (res.ok) {
-      router.push("/login");
-    } else {
-      setError(data.message || "Registration failed.");
+      const data = await res.json();
+      if (res.ok) {
+        router.push("/login");
+      } else {
+        setError(data.message || "Registration failed.");
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
+  /* Password strength */
+  const getPasswordStrength = () => {
+    if (!password) return { level: 0, label: "", color: "" };
+    let score = 0;
+    if (password.length >= 6) score++;
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+
+    if (score <= 2) return { level: score, label: "Weak", color: "bg-red-500" };
+    if (score <= 3) return { level: score, label: "Fair", color: "bg-amber-500" };
+    return { level: score, label: "Strong", color: "bg-emerald-500" };
+  };
+
+  const strength = getPasswordStrength();
+
   return (
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center relative overflow-hidden px-4">
+      {/* Background decorations */}
+      <div className="absolute inset-0 grid-pattern opacity-15" />
+      <div className="absolute top-1/4 -right-32 w-80 h-80 bg-brand-500/[0.03] rounded-full blur-[120px]" />
+      <div className="absolute bottom-1/4 -left-32 w-80 h-80 bg-brand-600/[0.03] rounded-full blur-[120px]" />
 
-    <motion.div
-  className="flex justify-center items-center min-h-screen bg-gradient-to-br from-stone-100 to-stone-300 p-6"
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  exit={{ opacity: 0 }}
-  transition={{ duration: 0.5 }}
->
-  <motion.div
-    className="w-full max-w-5xl bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col md:flex-row m-6"
-    initial={{ scale: 0.9, opacity: 0 }}
-    animate={{ scale: 1, opacity: 1 }}
-    transition={{ duration: 0.6, ease: "easeOut" }}
-    whileHover={{ scale: 1.02, boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)" }}
-  >
-    {/* Form Section */}
-    <div className="w-full md:w-1/2 p-10 flex flex-col justify-center bg-gradient-to-br from-stone-700 via-black to-stone-900 bg-opacity-80 backdrop-blur-md">
-      <h2 className="text-3xl font-bold text-gray-200 text-center">Create an account</h2>
-      <p className="text-gray-300 text-center mt-2">It&rsquo;s easy! Just take a minute and provide your details.</p>
-      {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
-
-      <motion.form
-        onSubmit={handleRegister}
-        className="mt-6 space-y-4"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10 w-full max-w-md"
       >
-        <motion.input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          className="w-full p-3 border rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-stone-500 bg-gray-50"
-          whileFocus={{ scale: 1.02, borderColor: "stone-700" }}
-        />
-        <motion.input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full p-3 border rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-stone-500 bg-gray-50"
-          whileFocus={{ scale: 1.02, borderColor: "stone-700" }}
-        />
-        <motion.input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full p-3 border rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-stone-500 bg-gray-50"
-          whileFocus={{ scale: 1.02, borderColor: "" }}
-        />
-        <motion.button
-          type="submit"
-          className="w-full p-3 bg-stone-500 text-black rounded-lg hover:bg-stone-800 hover:text-white transition"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Create Account
-        </motion.button>
-      </motion.form>
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2 mb-8">
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/10">
+              <Zap size={22} className="text-black" />
+            </div>
+            <span className="text-2xl font-bold text-white">
+              Traini<span className="text-brand-400">fy</span>
+            </span>
+          </Link>
+        </div>
 
-      <p className="text-center text-sm text-gray-200 mt-6">
-        Already have an account?
-        <button
-          onClick={() => router.push("/login")}
-          className="text-stone-400 hover:underline ml-1"
-        >
-          Login
-        </button>
-      </p>
+        {/* Card */}
+        <div className="glass rounded-2xl p-8 sm:p-10">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-white mb-2">
+              Create Your Account
+            </h1>
+            <p className="text-surface-400 text-sm">
+              Start your AI-powered fitness journey today
+            </p>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          <form onSubmit={handleRegister} className="space-y-5">
+            {/* Name */}
+            <div>
+              <label className="block text-xs font-medium text-surface-400 uppercase tracking-wider mb-2">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="John Doe"
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-surface-600 text-sm focus:outline-none focus:border-brand-500/40 focus:bg-white/[0.07] transition-all duration-200"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-xs font-medium text-surface-400 uppercase tracking-wider mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-surface-600 text-sm focus:outline-none focus:border-brand-500/40 focus:bg-white/[0.07] transition-all duration-200"
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-xs font-medium text-surface-400 uppercase tracking-wider mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="Min. 6 characters"
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-surface-600 text-sm focus:outline-none focus:border-brand-500/40 focus:bg-white/[0.07] transition-all duration-200 pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 hover:text-surface-300 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+
+              {/* Password Strength Indicator */}
+              {password && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="mt-3"
+                >
+                  <div className="flex gap-1 mb-1.5">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <div
+                        key={i}
+                        className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                          i <= strength.level
+                            ? strength.color
+                            : "bg-white/10"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p
+                    className={`text-xs ${
+                      strength.level <= 2
+                        ? "text-red-400"
+                        : strength.level <= 3
+                        ? "text-amber-400"
+                        : "text-emerald-400"
+                    }`}
+                  >
+                    {strength.label} password
+                  </p>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Benefits */}
+            <div className="pt-1">
+              {["AI-personalized workout plans", "Smart diet guidance", "Progress tracking & analytics"].map(
+                (benefit) => (
+                  <div
+                    key={benefit}
+                    className="flex items-center gap-2 text-surface-500 text-xs mb-1.5"
+                  >
+                    <Check size={12} className="text-brand-500" />
+                    {benefit}
+                  </div>
+                )
+              )}
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 rounded-xl btn-glow text-black font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+              ) : (
+                <>
+                  Create Account
+                  <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Login link */}
+          <p className="mt-6 text-center text-sm text-surface-500">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="text-brand-400 hover:text-brand-300 font-medium transition-colors"
+            >
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </motion.div>
     </div>
-
-    {/* Image Section with Animation */}
-    <motion.div
-      className="w-full md:w-1/2 relative hidden md:block overflow-hidden"
-      initial={{ opacity: 0, scale: 1.2 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-    >
-      <Image
-        src="/bgregjpg.jpg"
-        alt="Gym Background"
-        layout="fill"
-        objectFit="cover"
-        className="transform scale-105 transition-all duration-500 hover:scale-110"
-      />
-      <div className="absolute bottom-6 left-6 text-stone-200 text-lg font-light bg-black bg-opacity-50 p-3 rounded-md">
-        <motion.p initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
-          The pain of discipline is temporary, but the results of consistency are forever.
-        </motion.p>
-      </div>
-    </motion.div>
-  </motion.div>
-</motion.div>
-
-
   );
 };
 

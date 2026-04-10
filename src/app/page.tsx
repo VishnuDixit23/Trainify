@@ -1,404 +1,597 @@
 "use client";
-import { useRouter } from "next/navigation";
-import Link from 'next/link';
-import Landbar from "../app/assets/Landbar";
-import BackgroundImage from "../app/assets/valery-sysoev-qMWEzISL1p0-unsplash.jpg"
-import Background2Image from "../app/assets/sven-mieke-Lx_GDv7VA9M-unsplash.jpg";
-import Background3Image from "../app/assets/brooke-lark-jUPOXXRNdcA-unsplash.jpg";
-import Background4Image from "../app/assets/hester-qiang-95t94hZTESw-unsplash.jpg";
-import getFitImage from "../app/assets/danielle-cerullo-CQfNt66ttZM-unsplash.jpg";
-import Background5Image from "../../src/app/assets/service4jpg.jpg"
-import { Instagram, Facebook, Youtube, Twitter } from "lucide-react";
 
+import { useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  ArrowRight,
+  Star,
+  Zap,
+  Target,
+  Shield,
+  Users,
+  Instagram,
+  Twitter,
+  Youtube,
+  Github,
+  ChevronRight,
+} from "lucide-react";
+import Navigation from "./components/Navigation";
+import SectionHeading from "./components/ui/SectionHeading";
+import GlassCard from "./components/ui/GlassCard";
+import GradientButton from "./components/ui/GradientButton";
 
+/* ─── Feature Cards Data ─── */
+const features = [
+  {
+    title: "AI Workout Plans",
+    subtitle: "Personalized Training",
+    description:
+      "Get a fully customized weekly workout schedule tailored to your body, goals, and available equipment.",
+    image: "/bglog3.jpg",
+    href: "/login",
+    tag: "Most Popular",
+  },
+  {
+    title: "Smart Diet Plans",
+    subtitle: "Nutrition Guidance",
+    description:
+      "Receive macro-optimized meal plans aligned with your fitness goals and dietary preferences.",
+    image: "/diet.jpg",
+    href: "/login",
+    tag: "AI-Powered",
+  },
+  {
+    title: "Progress Tracking",
+    subtitle: "Journey Analytics",
+    description:
+      "Log every workout, track consistency, and visualize your transformation journey.",
+    image: "/bglog4.jpg",
+    href: "/login",
+    tag: "Real-Time",
+  },
+  {
+    title: "Custom Routines",
+    subtitle: "800+ Exercises",
+    description:
+      "Build your own weekly training split from our extensive exercise library.",
+    image: "/fitness.avif",
+    href: "/login",
+    tag: "Drag & Drop",
+  },
+];
+
+/* ─── How It Works Data ─── */
+const howItWorks = [
+  {
+    step: "01",
+    title: "Create Your Profile",
+    description:
+      "Tell us about your age, weight, goals, fitness level, and available equipment.",
+  },
+  {
+    step: "02",
+    title: "AI Generates Your Plan",
+    description:
+      "Our AI engine creates a personalized workout and diet plan in seconds.",
+  },
+  {
+    step: "03",
+    title: "Train & Track",
+    description:
+      "Follow your plan, log workouts, and watch your progress compound over time.",
+  },
+];
+
+/* ─── Testimonials Data ─── */
+const testimonials = [
+  {
+    name: "Arjun Mehta",
+    location: "Delhi, India",
+    text: "Trainify replaced my personal trainer. The AI workout plans are incredibly detailed and adapt to my progress perfectly.",
+    rating: 5,
+  },
+  {
+    name: "Sarah Johnson",
+    location: "New York, USA",
+    text: "The diet planning feature is a game-changer. It considers my vegetarian preferences and still hits my protein goals.",
+    rating: 5,
+  },
+  {
+    name: "Rahul Sharma",
+    location: "Mumbai, India",
+    text: "I've tried many fitness apps, but Trainify's AI actually understands what I need. It's like having a coach in my pocket.",
+    rating: 5,
+  },
+  {
+    name: "Emily Chen",
+    location: "San Francisco, USA",
+    text: "The progress tracking keeps me accountable. I can see my improvement week over week and it's incredibly motivating.",
+    rating: 5,
+  },
+];
+
+/* ─── Why Trainify Data ─── */
+const whyTrainify = [
+  {
+    icon: <Zap size={22} />,
+    title: "AI-First Approach",
+    description:
+      "Every recommendation is personalized by AI, not generic templates.",
+  },
+  {
+    icon: <Target size={22} />,
+    title: "Goal-Oriented",
+    description:
+      "Whether you want to lose fat, gain muscle, or improve endurance — we adapt.",
+  },
+  {
+    icon: <Shield size={22} />,
+    title: "Science-Backed",
+    description:
+      "Plans based on exercise science principles for safe, effective training.",
+  },
+  {
+    icon: <Users size={22} />,
+    title: "Community-Driven",
+    description:
+      "Join fitness enthusiasts on the same journey as you.",
+  },
+];
+
+/* ═══════════════════════════════════════════
+   MAIN COMPONENT
+   ═══════════════════════════════════════════ */
 export default function Home() {
-  const router = useRouter();
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+
   return (
+    <main className="relative overflow-hidden bg-[#050505]">
+      {/* ═══════ Navigation ═══════ */}
+      <Navigation variant="landing" />
 
-    <>
-    <div
-      className="bg-cover bg-center h-screen flex flex-col justify-between animate-fade-in"
-      style={{
-        backgroundImage: `url(${BackgroundImage.src})`,
-        fontFamily: "'Questrial', sans-serif",
-      }} 
-    >
-      
-     <Landbar/>
-
-
- {/* Hero Section */}
- <div className="flex flex-col items-start justify-center h-full px-8 md:px-20 text-white rounded-lg animate-slide-up">
-   <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6 hover:scale-105 transition-transform duration-300 rounded-lg">
-     Your AI-Powered Fitness Companion
-   </h1>
-   <p className="text-lg md:text-xl max-w-xl mb-8 hover:opacity-90 transition-opacity duration-300">
-     Trainify is your personalized workout partner, using AI to provide
-     tailored workout plans,Personalise Diets, track your progress, and offer expert guidance.
-     Start your fitness journey today!
-   </p>
-  
- <button 
- className="px-6 py-3 bg-gradient-to-br from-stone-700 to-stone-800 backdrop-blur-3xl  text-stone-200  bg-opacity-75 rounded-lg shadow-lg hover:bg-neutral-900 hover:scale-105 transition-all duration-300 "
-  onClick={() => {
-  const section = document.getElementById("our-services");
-  section?.scrollIntoView({ behavior: "smooth" });
-}}
- >
-   Get Started
- </button>
-
- </div>
-</div>
-<section
-     id="testimonials"
-     className="bg-neutral-900 py-12 animate-fade-in scroll-mt-12 rounded-lg"
-   >
-     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-       <h2 className="text-3xl font-extrabold text-white text-center mb-8 animate-slide-up">
-         Happy Trainify Users
-       </h2>
-       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-         {/* Testimonial 1 */}
-         <div className="bg-gradient-to-br from-stone-900 via-black to-stone-800 backdrop-blur-2xl p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
-           <div className="flex items-center mb-4">
-             <span className="text-[#c2dae6] text-xl transition-transform group-hover:scale-110">
-               ★★★★★
-             </span>
-           </div>
-           <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-[#d3cb61bb] transition-colors">
-             Amazing Experience
-           </h3>
-           <p className="text-gray-300 mb-4 group-hover:text-white transition-colors">
-             Trainify has transformed my fitness journey. I&rsquo;m now more motivated
-             and focused than ever before. It&rsquo;s like having a personal trainer in
-             my pocket!
-           </p>
-           <p className="text-gray-400 text-sm group-hover:text-[#d3cb61bb] transition-colors">
-             John Doe, NY
-           </p>
-         </div>
- 
-         {/* Testimonial 2 */}
-         <div className="bg-gradient-to-br from-stone-900 via-black to-stone-800 backdrop-blur-2xl p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
-           <div className="flex items-center mb-4">
-             <span className="text-[#c2dae6] text-xl transition-transform group-hover:scale-110">
-               ★★★★★
-             </span>
-           </div>
-           <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-[#d3cb61bb] transition-colors">
-             Incredible Results
-           </h3>
-           <p className="text-gray-300 mb-4 group-hover:text-white transition-colors">
-             I never thought achieving my fitness goals could be this enjoyable.
-             Trainify has made it possible with its personalized approach and
-             expert guidance.
-           </p>
-           <p className="text-gray-400 text-sm group-hover:text-[#d3cb61bb] transition-colors">
-             Jane Smith, CA
-           </p>
-         </div>
- 
-         {/* Testimonial 3 */}
-         <div className="bg-gradient-to-br from-stone-900 via-black to-stone-800 backdrop-blur-2xl p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
-           <div className="flex items-center mb-4">
-             <span className="text-[#c2dae6] text-xl transition-transform group-hover:scale-110">
-               ★★★★★
-             </span>
-           </div>
-           <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-[#d3cb61bb] transition-colors">
-             Life-Changing
-           </h3>
-           <p className="text-gray-300 mb-4 group-hover:text-white transition-colors">
-             Trainify&rsquo;s AI-powered workouts have completely changed my
-             perspective on fitness. I feel healthier, stronger, and more
-             confident. Thank you, Trainify!
-           </p>
-           <p className="text-gray-400 text-sm group-hover:text-[#d3cb61bb] transition-colors">
-             Adam Johnson, TX
-           </p>
-         </div>
- 
-         {/* Testimonial 4 */}
-         <div className="bg-gradient-to-br from-stone-900 via-black to-stone-800 backdrop-blur-2xl p-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 group animate-zoom-in">
-           <div className="flex items-center mb-4">
-             <span className="text-[#c2dae6] text-xl transition-transform group-hover:scale-110">
-               ★★★★★
-             </span>
-           </div>
-           <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-[#d3cb61bb] transition-colors">
-             Highly Recommended
-           </h3>
-           <p className="text-gray-300 mb-4 group-hover:text-white transition-colors">
-             I&rsquo;ve recommended Trainify to all my friends and family. The results
-             speak for themselves, and the personalized approach is truly
-             remarkable.
-           </p>
-           <p className="text-gray-400 text-sm group-hover:text-[#d3cb61bb] transition-colors">
-             Sarah Parker, FL
-           </p>
-         </div>
-       </div>
-        
-     </div>
-   </section>
-
-   <section className="bg-neutral-900 py-16">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <section id="our-services">
-      <h2 className="text-4xl font-bold text-white mb-4 animate-fadeInUp">Our Services</h2>
-    </section>
-    <p className="text-lg text-gray-300 mb-10 animate-fadeInUp delay-100">Tailored for You</p>
-
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-      {/* Service 1 */}
-      <Link href="/login">
-        <div className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group h-full flex flex-col">
+      {/* ═══════ Hero Section ═══════ */}
+      <section
+        ref={heroRef}
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      >
+        {/* Background image with parallax zoom */}
+        <motion.div style={{ scale: heroScale }} className="absolute inset-0">
           <div
-            style={{ backgroundImage: `url(${Background2Image.src})` }}
-            className="w-full h-56 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
-          ></div>
-          <div className=" absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div className="p-6 text-center relative z-10">
-            <h3 className="text-xl font-semibold text-white group-hover:text-stone-600 transition-colors duration-300">
-              Designated Workouts
-            </h3>
-            <p className="text-gray-300 group-hover:text-gray-100 transition-colors">
-              Tailored workouts designed to meet your personal fitness goals.
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: "url('/hero-gym.jpg')" }}
+          />
+          {/* Heavy dark overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-[#050505]" />
+        </motion.div>
+
+        {/* Subtle gold gradient orb */}
+        <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-brand-500/[0.04] rounded-full blur-[150px] animate-float pointer-events-none" />
+
+        {/* Content */}
+        <motion.div
+          style={{ opacity: heroOpacity }}
+          className="relative z-10 max-w-5xl mx-auto px-6 text-center"
+        >
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
+          >
+            <span className="gradient-text-white">Your AI-Powered</span>
+            <br />
+            <span className="gradient-text">Fitness Companion</span>
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="text-lg sm:text-xl text-surface-300 max-w-2xl mx-auto mb-10 leading-relaxed"
+          >
+            Personalized workout plans, smart diet guidance, and real-time
+            progress tracking — all tailored to your body, goals, and lifestyle.
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <Link href="/register">
+              <GradientButton size="lg" icon={<Zap size={20} />}>
+                Start Free Today
+              </GradientButton>
+            </Link>
+            <GradientButton
+              variant="secondary"
+              size="lg"
+              icon={<ArrowRight size={18} />}
+              onClick={() => {
+                document
+                  .getElementById("features")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Explore Features
+            </GradientButton>
+          </motion.div>
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+            className="w-6 h-10 rounded-full border-2 border-surface-600 flex items-start justify-center p-1.5"
+          >
+            <div className="w-1.5 h-3 rounded-full bg-brand-500/60" />
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ═══════ Features Section — Image-Based Bento Grid ═══════ */}
+      <section id="features" className="relative py-16">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-[#0a0a0a] to-[#050505]" />
+        <div className="relative section-container">
+          <SectionHeading
+            badge="Features"
+            title="Everything You Need to Transform"
+            subtitle="Four powerful AI-driven tools working together to accelerate your fitness journey."
+          />
+
+          {/* Bento grid — 2 large cards on top, 2 narrow cards below */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {features.map((feature, i) => (
+              <Link key={feature.title} href={feature.href}>
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.6, delay: i * 0.12 }}
+                  className="group relative h-[340px] sm:h-[380px] rounded-2xl overflow-hidden cursor-pointer"
+                >
+                  {/* Background image */}
+                  <Image
+                    src={feature.image}
+                    alt={feature.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+
+                  {/* Gradient overlay — darkens bottom for text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+
+                  {/* Gold accent line at top */}
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  {/* Tag badge */}
+                  <div className="absolute top-5 left-5">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-brand-500/15 text-brand-400 border border-brand-500/20 backdrop-blur-md">
+                      {feature.tag}
+                    </span>
+                  </div>
+
+                  {/* Content overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-7">
+                    <p className="text-brand-400 text-xs font-semibold uppercase tracking-widest mb-2">
+                      {feature.subtitle}
+                    </p>
+                    <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2 group-hover:text-brand-300 transition-colors duration-300">
+                      {feature.title}
+                    </h3>
+                    <p className="text-surface-300 text-sm leading-relaxed mb-4 max-w-md">
+                      {feature.description}
+                    </p>
+
+                    {/* Explore link */}
+                    <div className="flex items-center gap-1.5 text-brand-400 text-sm font-medium translate-x-0 group-hover:translate-x-2 transition-transform duration-300">
+                      Explore <ChevronRight size={16} />
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════ How It Works Section ═══════ */}
+      <section id="how-it-works" className="relative py-16">
+        <div className="absolute inset-0 bg-[#050505]" />
+        <div className="absolute inset-0 grid-pattern opacity-20" />
+
+        <div className="relative section-container">
+          <SectionHeading
+            badge="How It Works"
+            title="Get Started in 3 Simple Steps"
+            subtitle="From sign-up to your first AI-generated workout plan in under 2 minutes."
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {howItWorks.map((step, i) => (
+              <motion.div
+                key={step.step}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.15 }}
+                className="relative text-center"
+              >
+                {/* Connector line */}
+                {i < howItWorks.length - 1 && (
+                  <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-px bg-gradient-to-r from-brand-500/20 to-transparent" />
+                )}
+
+                {/* Step number */}
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-500/5 border border-brand-500/15 mb-6">
+                  <span className="text-2xl font-bold gradient-text">
+                    {step.step}
+                  </span>
+                </div>
+
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  {step.title}
+                </h3>
+                <p className="text-surface-400 leading-relaxed max-w-xs mx-auto">
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════ Why Trainify Section ═══════ */}
+      <section className="relative py-16">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-[#080808] to-[#050505]" />
+
+        <div className="relative section-container">
+          <SectionHeading
+            badge="Why Trainify"
+            title="Built Different. Built Better."
+            subtitle="We're not another generic fitness app. Here's what sets us apart."
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {whyTrainify.map((item, i) => (
+              <GlassCard
+                key={item.title}
+                delay={i * 0.1}
+                padding="p-6"
+                className="text-center"
+              >
+                <div className="inline-flex p-3 rounded-xl bg-brand-500/5 text-brand-400 mb-4">
+                  {item.icon}
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-surface-400 leading-relaxed">
+                  {item.description}
+                </p>
+              </GlassCard>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════ Testimonials Section ═══════ */}
+      <section id="testimonials" className="relative py-16 overflow-hidden">
+        <div className="absolute inset-0 bg-[#050505]" />
+        <div className="absolute top-0 left-1/3 w-96 h-96 bg-brand-500/[0.03] rounded-full blur-[120px]" />
+
+        <div className="relative section-container">
+          <SectionHeading
+            badge="Testimonials"
+            title="Loved by Fitness Enthusiasts"
+            subtitle="People around the world trust Trainify to guide their fitness journey."
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {testimonials.map((t, i) => (
+              <GlassCard key={t.name} delay={i * 0.1} padding="p-6">
+                {/* Stars */}
+                <div className="flex gap-0.5 mb-4">
+                  {Array.from({ length: t.rating }).map((_, j) => (
+                    <Star
+                      key={j}
+                      size={14}
+                      className="text-brand-400 fill-brand-400"
+                    />
+                  ))}
+                </div>
+
+                <p className="text-surface-300 text-sm leading-relaxed mb-5">
+                  &ldquo;{t.text}&rdquo;
+                </p>
+
+                <div className="border-t border-white/5 pt-4">
+                  <p className="text-sm font-medium text-white">{t.name}</p>
+                  <p className="text-xs text-surface-500">{t.location}</p>
+                </div>
+              </GlassCard>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════ CTA Section ═══════ */}
+      <section className="relative py-16">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-[#080805] to-[#050505]" />
+
+        <div className="relative section-container">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="relative glass rounded-3xl p-12 sm:p-16 text-center overflow-hidden gradient-border"
+          >
+            {/* Background decoration */}
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-500/[0.03] to-transparent" />
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand-500/[0.06] rounded-full blur-[80px]" />
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-brand-600/[0.04] rounded-full blur-[80px]" />
+
+            <div className="relative z-10">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight gradient-text-white mb-4">
+                Ready to Transform Your Body?
+              </h2>
+              <p className="text-lg text-surface-400 max-w-xl mx-auto mb-8">
+                Join users who are already crushing their fitness goals with
+                Trainify&apos;s AI-powered guidance.
+              </p>
+              <Link href="/register">
+                <GradientButton size="lg" icon={<Zap size={20} />}>
+                  Get Started — It&apos;s Free
+                </GradientButton>
+              </Link>
+              <p className="mt-4 text-xs text-surface-500">
+                No credit card required. Free forever.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════ Footer ═══════ */}
+      <footer className="relative border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            {/* Brand */}
+            <div className="md:col-span-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center">
+                  <Zap size={18} className="text-black" />
+                </div>
+                <span className="text-lg font-bold text-white">
+                  Traini<span className="text-brand-400">fy</span>
+                </span>
+              </div>
+              <p className="text-sm text-surface-500 leading-relaxed">
+                AI-powered fitness companion. Personalized workout plans, smart
+                diet guidance, and progress tracking.
+              </p>
+            </div>
+
+            {/* Product */}
+            <div>
+              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+                Product
+              </h4>
+              <ul className="space-y-3">
+                {[
+                  "Workout Plans",
+                  "Diet Plans",
+                  "Progress Tracking",
+                  "Exercise Library",
+                ].map((link) => (
+                  <li key={link}>
+                    <Link
+                      href="/login"
+                      className="text-sm text-surface-500 hover:text-surface-300 transition-colors"
+                    >
+                      {link}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+                Company
+              </h4>
+              <ul className="space-y-3">
+                {[
+                  "About Us",
+                  "Privacy Policy",
+                  "Terms of Service",
+                  "Contact",
+                ].map((link) => (
+                  <li key={link}>
+                    <a
+                      href="#"
+                      className="text-sm text-surface-500 hover:text-surface-300 transition-colors"
+                    >
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Social + Newsletter */}
+            <div>
+              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+                Follow Us
+              </h4>
+              <div className="flex gap-3">
+                {[
+                  { icon: <Instagram size={18} />, href: "#" },
+                  { icon: <Twitter size={18} />, href: "#" },
+                  { icon: <Youtube size={18} />, href: "#" },
+                  { icon: <Github size={18} />, href: "#" },
+                ].map((social, i) => (
+                  <a
+                    key={i}
+                    href={social.href}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-surface-500 hover:text-brand-400 hover:bg-brand-500/5 border border-white/5 hover:border-brand-500/20 transition-all duration-200"
+                  >
+                    {social.icon}
+                  </a>
+                ))}
+              </div>
+
+              <div className="mt-6">
+                <h4 className="text-sm font-semibold text-white mb-3">
+                  Stay Updated
+                </h4>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm bg-white/5 border border-white/10 text-surface-300 placeholder-surface-600 focus:outline-none focus:border-brand-500/40 transition-colors"
+                  />
+                  <button className="btn-glow px-4 py-2.5 rounded-xl text-sm font-medium text-black">
+                    →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-surface-600">
+              © {new Date().getFullYear()} Trainify. Designed & built by Vishnu
+              Dixit.
+            </p>
+            <p className="text-xs text-surface-600">
+              AI-Powered Fitness Companion
             </p>
           </div>
         </div>
-      </Link>
-
-      {/* Service 2 */}
-      <div
-        className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group cursor-pointer h-full flex flex-col"
-        onClick={() => router.push("/login")}
-      >
-        <div
-          style={{ backgroundImage: `url(${Background3Image.src})` }}
-          className="w-full h-56 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
-        ></div>
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <div className="p-6 text-center relative z-10">
-          <h3 className="text-xl font-semibold text-white group-hover:text-green-400 transition-colors duration-300">
-            Personalised Diets
-          </h3>
-          <p className="text-gray-300 group-hover:text-gray-100 transition-colors">
-            Diet plans provided to you according to your needs.
-          </p>
-        </div>
-      </div>
-
-      {/* Service 3 */}
-      <div
-        className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group cursor-pointer h-full flex flex-col"
-        onClick={() => router.push("/login")}
-      >
-        <div
-          style={{ backgroundImage: `url(${Background4Image.src})` }}
-          className="w-full h-56 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
-        ></div>
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <div className="p-6 text-center relative z-10">
-          <h3 className="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors duration-300">
-            Track Your Journey
-          </h3>
-          <p className="text-gray-300 group-hover:text-gray-100 transition-colors">
-            The journey of a thousand miles begins with a single step.
-          </p>
-          <p className="text-gray-400 italic group-hover:text-gray-200 transition-colors">
-            - Lao Tzu
-          </p>
-        </div>
-      </div>
-
-      {/* Service 4 */}
-      <div
-        className=" relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 duration-300 group cursor-pointer h-full flex flex-col"
-        onClick={() => router.push("/login")}
-      >
-        <div
-          style={{ backgroundImage: `url(${Background5Image.src})` }}
-          className="w-full h-56 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
-        ></div>
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <div className="p-6 text-center relative z-10">
-          <h3 className="text-xl font-semibold text-white group-hover:text-stone-700 transition-colors duration-300">
-            Make Your Own Routine
-          </h3>
-          <p className="text-gray-300 group-hover:text-gray-100 transition-colors">
-            Popular workout plans designed by experts.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-  
-<div className="bg-neutral-900 min-h-screen flex flex-col justify-between">
- {/* Header Section */}
- <section className="bg-neutral-900 flex flex-col md:flex-row items-center justify-between py-16 bg-[#1F2933]">
-  {/* Image Section */}
-  <div className="w-full md:w-1/2 animate-fadeInLeft flex justify-center mb-10 md:mb-0">
-    <div
-      style={{
-        backgroundImage: `url(${getFitImage.src})`,
-      }}
-      className="w-5/6 h-[300px] md:h-[400px] bg-cover bg-center shadow-lg rounded-lg"
-      aria-label="Gym Equipment"
-    ></div>
-  </div>
-
-  {/* Text Section */}
-  <div className="w-full md:w-1/2 px-6 md:px-8 animate-fadeInRight text-center md:text-left">
-    <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-      Discover Trainify Now
-    </h1>
-    <h2 className="text-5xl md:text-6xl font-extrabold text-stone-500 mb-6">
-      Get Fit
-    </h2>
-    <p className="text-base md:text-lg text-gray-300 mb-8">
-      Trainify – Your AI-Powered Fitness Companion. Personalized workout
-      plans, progress tracking, and expert guidance, all tailored to your
-      goals. Start your fitness journey today!
-    </p>
-  </div>
-</section>
-
-
- {/* Why Trainify Section */}
- <section
-     className="  relative py-16 bg-cover bg-center animate-fadeIn fontFamily: 'Questrial', sans-serif"
-   >
-     <div className="bg-neutral-900 bg-opacity-95 max-w-6xl mx-auto px-4 py-12 rounded-lg shadow-lg">
-       <h2 className="text-4xl font-bold text-center text-white mb-12 animate-fadeInUp">
-         Why Trainify
-       </h2>
-       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-         {/* Animated Cards */}
-         <div className="text-center bg-gradient-to-br from-stone-700 via-stone-900 to-stone-800 backdrop-blur-2xl hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-100">
-           <h3 className="text-2xl font-semibold text-stone-400 mb-2">
-             Personalized Approach
-           </h3>
-           <p className="text-gray-300">
-             Trainify&rsquo;s AI provides a personalized approach to your fitness
-             journey, ensuring that every workout plan is tailored to your
-             specific goals and needs.
-           </p>
-         </div>
-         <div className="text-center bg-gradient-to-br from-stone-700 via-stone-900 to-stone-800 backdrop-blur-2xl hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-200">
-           <h3 className="text-2xl font-semibold text-stone-400 mb-2">
-             Progress Tracking
-           </h3>
-           <p className="text-gray-300">
-             Easily track your progress and milestones, allowing you to see the
-             tangible results of your hard work and dedication.
-           </p>
-         </div>
-         <div className="text-center bg-gradient-to-br from-stone-700 via-stone-900 to-stone-800 backdrop-blur-2xl hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-300">
-           <h3 className="text-2xl font-semibold text-stone-400 mb-2">
-             Expert Guidance
-           </h3>
-           <p className="text-gray-300">
-             Our expert trainers and AI guidance are with you every step of the
-             way, offering support and motivation to help you achieve optimal
-             results.
-           </p>
-         </div>
-         <div className="text-center bg-gradient-to-br from-stone-700 via-stone-900 to-stone-800 backdrop-blur-2xl hover:shadow-lg p-4 rounded-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-400">
-           <h3 className="text-2xl font-semibold text-stone-400 mb-2">
-             Community & Support
-           </h3>
-           <p className="text-gray-300">
-             Join our community of fitness enthusiasts and receive unparalleled
-             support, motivation, and expert advice to keep you on track towards
-             your fitness goals.
-           </p>
-         </div>
-       </div>
-       <div className="flex justify-center mt-8 animate-fadeInUp delay-500">
-        
-       </div>
-     </div>
-   </section>
-
-  {/* Footer Section */}
-  <footer className="bg-gradient-to-b from-neutral-900 to-black text-white py-12 border-t border-gray-800">
-  <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
-    
-    {/* Branding & About */}
-    <div className="flex flex-col space-y-3">
-      <h3 className="text-3xl font-extrabold tracking-wide text-stone-400">Trainify</h3>
-      <p className="text-gray-400 text-sm leading-relaxed">
-        Elevate your fitness with AI-powered guidance. Personalized plans, expert workouts, and seamless tracking.
-      </p>
-    </div>
-
-    {/* Navigation */}
-    <div className="flex flex-col space-y-3">
-      <h4 className="text-lg font-semibold text-white">Quick Links</h4>
-      <ul className="space-y-2 text-gray-400 text-sm">
-        <li>
-          <a href="#" className="hover:text-stone-300 transition-colors">Home</a>
-        </li>
-        <li>
-          <a href="#" className="hover:text-stone-300 transition-colors">Workout Plans</a>
-        </li>
-        <li>
-          <a href="#" className="hover:text-stone-300 transition-colors">Diet Plans</a>
-        </li>
-        <li>
-          <a href="#" className="hover:text-stone-300 transition-colors">Privacy Policy</a>
-        </li>
-        <li>
-          <a href="#" className="hover:text-stone-300 transition-colors">Terms & Conditions</a>
-        </li>
-      </ul>
-    </div>
-
-    {/* Social Media & Newsletter */}
-    <div className="flex flex-col space-y-4 text-center md:text-left">
-      <h4 className="text-lg font-semibold text-white">Follow Us</h4>
-      <div className="flex justify-center md:justify-start space-x-4">
-      <a href="#" className="text-gray-400 hover:text-yellow-400 transition-colors">
-    <Instagram size={20} />
-  </a>
-  <a href="#" className="text-gray-400 hover:text-yellow-400 transition-colors">
-    <Facebook size={20} />
-  </a>
-  <a href="#" className="text-gray-400 hover:text-yellow-400 transition-colors">
-    <Youtube size={20} />
-  </a>
-  <a href="#" className="text-gray-400 hover:text-yellow-400 transition-colors">
-    <Twitter size={20} />
-  </a>
-
-      </div>
-      
-      {/* Newsletter */}
-      <h4 className="text-lg font-semibold text-white">Stay Updated</h4>
-      <div className="flex items-center bg-stone-800 px-4 py-2 rounded-lg">
-        <input
-          type="email"
-          placeholder="Enter your email"
-          className="bg-transparent text-gray-300 text-sm outline-none flex-1"
-        />
-        <button className="text-yellow-400 hover:text-yellow-500">
-          <i className="fas fa-paper-plane"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  {/* Bottom Section */}
-  <div className="mt-9 text-center text-gray-400 text-sm border-t border-gray-800 pt-3">
-    © 2025 Trainify. Powered and secured by Vishnu Dixit.
-  </div>
-</footer>
-
- 
-</div>
-   </>
+      </footer>
+    </main>
   );
 }

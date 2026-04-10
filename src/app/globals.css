@@ -2,30 +2,233 @@
 @tailwind components;
 @tailwind utilities;
 
-
-@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
-
-/* Apply Questrial font globally */
+/* ═══════════════════════════════════════════════
+   TRAINIFY DESIGN SYSTEM — Black & Dark Gold
+   ═══════════════════════════════════════════════ */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Brand Colors — Dark / Muted Gold ── */
+  --color-primary: 181 130 30;         /* Dark Gold #B5821E */
+  --color-primary-light: 196 150 40;   /* Slightly lighter #C49628 */
+  --color-primary-dark: 140 95 15;     /* Deep Gold #8C5F0F */
+
+  --color-accent: 196 150 40;          /* Warm Gold */
+  --color-accent-light: 210 170 60;    /* Light accent */
+
+  --color-success: 34 197 94;
+  --color-danger: 239 68 68;
+
+  /* ── Surfaces — True Black ── */
+  --color-bg-primary: 5 5 5;
+  --color-bg-secondary: 12 12 12;
+  --color-bg-tertiary: 22 22 22;
+  --color-bg-elevated: 35 35 35;
+
+  /* ── Text ── */
+  --color-text-primary: 240 240 240;
+  --color-text-secondary: 155 155 155;
+  --color-text-muted: 100 100 100;
+
+  /* ── Glass ── */
+  --glass-bg: rgba(255, 255, 255, 0.025);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-hover-border: rgba(181, 130, 30, 0.25);
+
+  /* ── Spacing ── */
+  --section-padding: 3rem;
+  --container-max: 76rem;
+
+  /* ── Radius ── */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+
+  /* ── Shadows ── */
+  --shadow-glow: 0 0 50px -12px rgba(181, 130, 30, 0.15);
+  --shadow-card: 0 4px 20px -1px rgba(0, 0, 0, 0.4);
+  --shadow-elevated: 0 16px 50px -10px rgba(0, 0, 0, 0.5);
+
+  /* ── Transitions ── */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ═══════════════ Base Styles ═══════════════ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'Questrial', sans-serif;
+  font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
+  background-color: rgb(var(--color-bg-primary));
+  color: rgb(var(--color-text-primary));
+  line-height: 1.6;
+  overflow-x: hidden;
 }
-html {
-  scroll-behavior: smooth;
+
+/* ═══════════════ Utility Classes ═══════════════ */
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+
+.glass:hover {
+  border-color: var(--glass-hover-border);
+}
+
+/* Gradient text — Dark Gold */
+.gradient-text {
+  background: linear-gradient(135deg, rgb(var(--color-accent)), rgb(var(--color-primary)), rgb(var(--color-primary-dark)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-white {
+  background: linear-gradient(180deg, #f0f0f0 0%, #999999 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow button — Dark Gold */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-dark)) 100%);
+  color: #000;
+  transition: all var(--transition-base);
+  box-shadow: 0 0 0 0 rgba(var(--color-primary), 0);
+}
+
+.btn-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px -5px rgba(var(--color-primary), 0.4);
+}
+
+.btn-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Secondary button */
+.btn-secondary {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  transition: all var(--transition-base);
+}
+
+.btn-secondary:hover {
+  border-color: var(--glass-hover-border);
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
+}
+
+/* Section container — tighter */
+.section-container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--section-padding) 1.5rem;
+}
+
+/* Animated gradient border — Dark Gold */
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.gradient-border {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    var(--gradient-angle),
+    rgb(var(--color-primary)),
+    rgb(var(--color-accent)),
+    rgb(var(--color-primary-dark)),
+    rgb(var(--color-primary))
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: gradient-rotate 4s linear infinite;
+}
+
+@keyframes gradient-rotate {
+  to { --gradient-angle: 360deg; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float-delayed {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 15px -5px rgba(181, 130, 30, 0.15); }
+  50% { box-shadow: 0 0 30px -5px rgba(181, 130, 30, 0.3); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.grid-pattern {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: rgb(var(--color-bg-primary)); }
+::-webkit-scrollbar-thumb { background: rgb(var(--color-bg-tertiary)); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-bg-elevated)); }
+
+::selection {
+  background-color: rgba(var(--color-primary), 0.3);
+  color: #fff;
 }
 
 nextjs-portal {

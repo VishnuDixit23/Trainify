@@ -1,158 +1,161 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { Moon, Sun, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
+import { Eye, EyeOff, Zap, ArrowRight } from "lucide-react";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    setDarkMode(storedTheme === "dark");
-    if (storedTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => {
-      const newTheme = !prev;
-      localStorage.setItem("theme", newTheme ? "dark" : "light");
-      document.documentElement.classList.toggle("dark", newTheme);
-      return newTheme;
-    });
-  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      localStorage.setItem("token", data.accessToken);
-      router.push("/dashboard");
-    } else {
-      setError(data.message || "Login failed. Please try again.");
+      if (res.ok) {
+        localStorage.setItem("token", data.accessToken);
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "Login failed. Please try again.");
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <motion.div
-  className="flex flex-col md:flex-row h-screen w-full bg-gray-100 dark:bg-gray-900"
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  exit={{ opacity: 0 }}
-  transition={{ duration: 0.5 }}
->
-  {/* Left Side */}
-  <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white dark:bg-gradient-to-br from-stone-300 to-stone-500 p-8 md:p-12 text-center">
-    <h1 className="text-4xl md:text-5xl font-extrabold text-black dark:text-white leading-tight">
-      TRAINIFY <span className="text-stone-800">POWERED BY</span> AN AI TRAINER.
-    </h1>
-    <p className="mt-4 text-base md:text-lg text-stone-800 dark:text-stone-800">
-      Don&rsquo;t wait for motivation, create it with consistent action.
-    </p>
-    <Link
-      href="/register"
-      className="mt-6 text-black dark:text-white font-semibold underline hover:text-stone-500 dark:hover:text-stone-300 transition-all"
-    >
-      Create an account →
-    </Link>
-  </div>
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center relative overflow-hidden px-4">
+      {/* Background decorations */}
+      <div className="absolute inset-0 grid-pattern opacity-15" />
+      <div className="absolute top-1/4 -left-32 w-80 h-80 bg-brand-500/[0.03] rounded-full blur-[120px]" />
+      <div className="absolute bottom-1/4 -right-32 w-80 h-80 bg-brand-600/[0.03] rounded-full blur-[120px]" />
 
-  {/* Dark Mode Toggle */}
-  <button
-    onClick={toggleDarkMode}
-    className="absolute top-4 right-4 p-2 md:p-3 rounded-full bg-white/20 hover:bg-white/30 transition z-50"
-  >
-    {darkMode ? <Sun className="text-yellow-400" /> : <Moon className="text-gray-800 dark:text-white" />}
-  </button>
-
-  {/* Right Side - Background & Login Form */}
-  <div className="relative w-full h-full md:w-1/2">
-  <Image
-  src="/bglog4.jpg"
-  alt="Gym Background"
-  fill
-  priority
-  sizes="100vw"
-  className="object-cover"
-/>
-
-
-    <div className="relative flex justify-center items-center h-full backdrop-blur-sm px-4 py-8 md:px-0">
       <motion.div
-        className="bg-white dark:bg-gradient-to-br from-stone-700 via-black to-stone-900 bg-opacity-80 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-lg max-w-md w-full"
-        initial={{ y: 20, opacity: 0, scale: 0.95 }}
-        animate={{ y: 0, opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10 w-full max-w-md"
       >
-        <h2 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-white text-center">
-          Login to your account
-        </h2>
-        {error && <p className="text-red-500 text-sm text-center mt-3">{error}</p>}
-        <form onSubmit={handleLogin} className="mt-4 space-y-4">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border rounded-lg text-gray-800 dark:text-black bg-gray-50 dark:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-stone-500"
-            placeholder="Email Address"
-            required
-          />
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2 mb-8">
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/10">
+              <Zap size={22} className="text-black" />
+            </div>
+            <span className="text-2xl font-bold text-white">
+              Traini<span className="text-brand-400">fy</span>
+            </span>
+          </Link>
+        </div>
 
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 pr-10 border rounded-lg text-gray-800 dark:text-black bg-gray-50 dark:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-stone-500"
-              placeholder="Password"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-3 text-gray-500 dark:text-gray-400"
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+        {/* Card */}
+        <div className="glass rounded-2xl p-8 sm:p-10">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
+            <p className="text-surface-400 text-sm">
+              Sign in to continue your fitness journey
+            </p>
           </div>
 
-          <button
-            type="submit"
-            className="w-full p-3 mt-2 text-black bg-stone-500 rounded-lg hover:bg-stone-800 hover:text-white transition-all"
-          >
-            Login
-          </button>
-        </form>
-        <p className="text-center text-sm mt-4 text-gray-900 dark:text-gray-300">
-          Forgot password?{" "}
-          <Link href="/forgot-password" className="text-stone-500 dark:text-stone-400 hover:underline">
-            Reset here
-          </Link>
-        </p>
+          {/* Error */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-5">
+            {/* Email */}
+            <div>
+              <label className="block text-xs font-medium text-surface-400 uppercase tracking-wider mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-surface-600 text-sm focus:outline-none focus:border-brand-500/40 focus:bg-white/[0.07] transition-all duration-200"
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-xs font-medium text-surface-400 uppercase tracking-wider mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-surface-600 text-sm focus:outline-none focus:border-brand-500/40 focus:bg-white/[0.07] transition-all duration-200 pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 hover:text-surface-300 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 rounded-xl btn-glow text-black font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Register link */}
+          <p className="mt-6 text-center text-sm text-surface-500">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="text-brand-400 hover:text-brand-300 font-medium transition-colors"
+            >
+              Create one
+            </Link>
+          </p>
+        </div>
       </motion.div>
     </div>
-  </div>
-</motion.div>
-
   );
 };
 

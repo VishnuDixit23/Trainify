@@ -1,39 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 import { connectToDatabase } from "../../../lib/mongodb";
-import jwt from "jsonwebtoken";
+import { authenticateRequest, isAuthenticated, rateLimit, withErrorHandling } from "../../../lib/api-middleware";
 
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY as string)
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: Request) {
-  try {
-    // 🔹 Extract token from header
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized: Missing token" }, { status: 401 });
-    }
+  // ✅ Rate limit: max 5 diet generations per minute
+  const rateLimitResult = rateLimit(req, { maxRequests: 5, windowMs: 60_000 });
+  if (rateLimitResult) return rateLimitResult;
 
-    const token = authHeader.split(" ")[1]; // Extract token
-    let decodedToken: any;
-
-    try {
-      decodedToken = jwt.verify(token, process.env.JWT_SECRET as string); // Decode JWT
-    } catch (error) {
-      return NextResponse.json({ error: "Unauthorized: Invalid token" }, { status: 403 });
-    }
-
-    if (!decodedToken || typeof decodedToken !== "object" || !decodedToken.userId) {
-      return NextResponse.json({ error: "Unauthorized: Invalid token payload" }, { status: 403 });
-    }
+  return withErrorHandling(async () => {
+    // ✅ Authenticate
+    const auth = authenticateRequest(req);
+    if (!isAuthenticated(auth)) return auth;
 
     const {
       age,
       height,
       weight,
       goal,
-      userId = decodedToken.userId,
+      userId = auth.userId,
       activityLevel,
       dietaryPreferences,
       allergies,
@@ -49,59 +38,72 @@ export async function POST(req: Request) {
     // ✅ **Check if user already has a diet plan**
     const existingPlan = await collection.findOne({ userId });
 
-    // ✅ **Generate AI diet plan**
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    const prompt = `
-  Generate a **personalized 7-day diet plan** in strict **JSON format** for a ${age}-year-old aiming for **${goal}**.
-  User Details:
-  - Age: ${age}
-  - Height: ${height} cm
-  - Weight: ${weight} kg
-  - Activity Level: ${activityLevel}
-  - Dietary Preferences: ${dietaryPreferences || "None"} (Ensure that all meals strictly follow this dietary preference. No exceptions.)
-  - Allergies: ${allergies || "None"} (Completely exclude any ingredients that the user is allergic to.)
-  - Preferred Meals per Day: ${preferredMealCount || 5}
-
-  The JSON should include:
-  - **title**: A catchy name for the diet plan
-  - **description**: A short overview of the meal plan
-  - **daily_caloric_intake**: Total recommended daily calories
-  - **macronutrients**: Breakdown of protein, carbs, fats in grams
-  - **pre_workout_meal**: Suggested pre-workout meal for energy
-  - **post_workout_meal**: Suggested post-workout meal for recovery
-  - **meals**: A list of meals for **Breakfast, Lunch, Dinner, Snacks** (ensuring they fit within the dietary preference)
-  - **important_considerations**: Any notes on hydration, timing, or nutritional advice
-
-  🔹 **Strict JSON Format Example**:
-  {
-    "title": "Muscle Gain High-Protein Diet",
-    "description": "A structured 7-day meal plan tailored for muscle growth.",
-    "daily_caloric_intake": "2800 kcal",
-    "macronutrients": { "protein": "180g", "carbs": "300g", "fats": "70g" },
-    "pre_workout_meal": "Oatmeal with banana & peanut butter",
-    "post_workout_meal": "Chicken breast, rice, and steamed broccoli",
-    "meals": [
-      { "meal": "Breakfast", "items": ["Scrambled eggs", "Oatmeal", "Avocado toast"] },
-      { "meal": "Lunch", "items": ["Grilled salmon", "Quinoa", "Steamed spinach"] },
-      { "meal": "Dinner", "items": ["Chicken breast", "Sweet potatoes", "Asparagus"] },
-      { "meal": "Snack 1", "items": ["Protein shake", "Almonds"] },
-      { "meal": "Snack 2", "items": ["Greek yogurt", "Berries"] }
-    ],
-    "important_considerations": [{ "title": "Hydration", "details": "Drink at least 3 liters of water daily" }]
-  }
-
-  🔹 **Respond ONLY in valid JSON format** with no extra text.
-`;
-
-    const result = await model.generateContent(prompt);
-
-    if (!result?.response?.candidates?.[0]?.content?.parts?.[0]?.text) {
-      return NextResponse.json({ error: "AI response error" }, { status: 500 });
+    // ✅ **If existing plan found, return it immediately (no regeneration)**
+    if (existingPlan && existingPlan.dietPlan) {
+      return NextResponse.json({ dietPlan: existingPlan.dietPlan, cached: true });
     }
 
-    let responseText = result.response.candidates[0].content.parts[0].text;
-    responseText = responseText.replace(/```json|```/g, "").trim();
+    // ✅ **Generate AI diet plan using GROQ — Elite Nutritionist Prompt**
+    const systemPrompt = `You are Dr. Nourish — a world-class sports nutritionist who has been the lead dietician for Olympic training centers and has authored 3 bestselling nutrition books. You hold dual certifications from the International Society of Sports Nutrition (ISSN) and Precision Nutrition (PN Level 2).
+
+YOUR RULES (follow strictly):
+1. Calculate the client's approximate TDEE based on their stats and activity level. Show your work in the description.
+2. Every meal MUST include specific portions in grams/cups/tbsp (no vague amounts like "some" or "a serving").
+3. The macronutrient split must be scientifically justified for the client's specific goal (e.g., high protein for muscle gain, moderate deficit for fat loss).
+4. STRICTLY respect dietary preferences. If vegetarian, NEVER include meat/fish/eggs unless explicitly stated they eat eggs. If vegan, NO animal products whatsoever.
+5. Include culturally relevant food options. For Indian clients, use items like dal, paneer, roti, dosa, idli, poha, rajma, chole, etc. alongside global options.
+6. Pre/post workout meals must include specific timing recommendations (e.g., "30-45 minutes before training").
+7. Include at least 5 meals: Breakfast, Mid-Morning Snack, Lunch, Evening Snack, Dinner.
+8. Each meal must have 3-5 specific food items with exact portions.
+9. Important considerations must include: hydration protocol, supplement recommendations (if appropriate), and meal prep tips.
+10. The title must sound like a premium nutrition program (e.g., "The Metabolic Ignition Protocol", "Clean Fuel Blueprint", "The Anabolic Kitchen Plan").
+11. Never suggest harmful or extreme diets. Focus on sustainable, evidence-based nutrition.`;
+
+    const userPrompt = `Create a personalized daily nutrition menu for this client. Output ONLY valid JSON, no markdown.
+
+CLIENT PROFILE:
+• Age: ${age} years old
+• Height: ${height}cm | Weight: ${weight}kg | BMI: ${(weight / ((height/100) ** 2)).toFixed(1)}
+• Primary Goal: ${goal}
+• Activity Level: ${activityLevel || 'Moderately Active'}
+• Dietary Preferences: ${dietaryPreferences || 'No restrictions'} — STRICTLY follow this. Zero exceptions.
+• Allergies: ${allergies || 'None'} — Completely exclude these ingredients.
+• Meals per Day: ${preferredMealCount || 5}
+
+JSON SCHEMA (follow exactly):
+{
+  "title": "Premium nutrition program name",
+  "description": "2-3 motivating sentences referencing the client's stats, calculated TDEE, and why this plan fits their goal",
+  "daily_caloric_intake": "Exact number like 2800 kcal",
+  "macronutrients": {"protein": "180g", "carbs": "300g", "fats": "70g"},
+  "pre_workout_meal": "Specific meal with portions and timing (e.g., 30-45 min before training: ...)",
+  "post_workout_meal": "Specific recovery meal with portions and timing (e.g., within 30 min post-training: ...)",
+  "meals": [
+    {"meal": "Breakfast", "items": ["Food item with exact portion in grams", "Item 2", "Item 3"]},
+    {"meal": "Mid-Morning Snack", "items": ["Item 1", "Item 2"]},
+    {"meal": "Lunch", "items": ["Item 1", "Item 2", "Item 3"]},
+    {"meal": "Evening Snack", "items": ["Item 1", "Item 2"]},
+    {"meal": "Dinner", "items": ["Item 1", "Item 2", "Item 3"]}
+  ],
+  "important_considerations": [
+    {"title": "Topic", "details": "Specific, actionable advice"}
+  ]
+}
+
+IMPORTANT: Generate exactly ${preferredMealCount || 5} meals. Each meal must have 3-5 food items with specific portions.`;
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.7,
+      max_tokens: 4096,
+      response_format: { type: "json_object" },
+    });
+
+    const responseText = chatCompletion.choices[0]?.message?.content || "{}";
 
     let aiGeneratedPlan;
     try {
@@ -127,7 +129,7 @@ export async function POST(req: Request) {
 
     // ✅ **Save the new diet plan**
     const savedPlan = await collection.insertOne({
-      userId: decodedToken.userId,
+      userId: auth.userId,
       age,
       height,
       weight,
@@ -141,9 +143,5 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ dietPlan, dbId: savedPlan.insertedId });
-
-  } catch (error) {
-    console.error("Error generating diet plan:", error);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
-  }
+  }, "generate-diet");
 }

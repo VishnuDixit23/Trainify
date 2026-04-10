@@ -1,22 +1,27 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-poppins",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Trainify",
-  description: "Trainify",
+  title: "Trainify — AI-Powered Fitness Companion",
+  description:
+    "Transform your fitness journey with AI-powered personalized workout plans, diet guidance, progress tracking, and expert coaching.",
+  keywords: ["fitness", "AI", "workout", "diet", "personal trainer"],
+  openGraph: {
+    title: "Trainify — AI-Powered Fitness Companion",
+    description:
+      "Personalized workout plans, smart diet guidance, and real-time progress tracking powered by AI.",
+    type: "website",
+  },
   icons: {
-    icon: '/favicon.ico', // ✅ Add this line
+    icon: "/favicon.ico",
   },
 };
 
@@ -26,11 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet"></link>
+    <html lang="en" className="dark">
+      <body className={`${poppins.variable} font-sans antialiased`}>
         {children}
       </body>
     </html>

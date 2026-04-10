@@ -4,18 +4,18 @@ import jwt from "jsonwebtoken";
 
 export async function DELETE(req: Request) {
   try {
-    // 🔹 Extract token from headers
+    // Extract token from headers
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json({ error: "Unauthorized: Missing token" }, { status: 401 });
     }
 
-    const token = authHeader.split(" ")[1]; // Extract token
+    const token = authHeader.split(" ")[1];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let decodedToken: any;
 
     try {
-      decodedToken = jwt.verify(token, process.env.JWT_SECRET as string); // Decode JWT
+      decodedToken = jwt.verify(token, process.env.JWT_SECRET as string);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return NextResponse.json({ error: "Unauthorized: Invalid token" }, { status: 403 });
@@ -27,21 +27,22 @@ export async function DELETE(req: Request) {
 
     const userId = decodedToken.userId;
 
-    // ✅ Connect to MongoDB
-    const  db  = await connectToDatabase();
-    const collection = db.collection("workoutPlans");
+    // Connect to MongoDB
+    const db = await connectToDatabase();
 
-    // ✅ Check if the user has a workout plan
-    const existingPlan = await collection.findOne({ userId });
+    // Delete ALL workout plans for this user (deleteMany handles duplicates)
+    const workoutResult = await db.collection("workoutPlans").deleteMany({ userId });
+    console.log(`[DELETE] Deleted ${workoutResult.deletedCount} workout plan(s) for user ${userId}`);
 
-    if (!existingPlan) {
-      return NextResponse.json({ error: "No workout plan found to delete" }, { status: 404 });
-    }
+    // Also delete the associated diet plan(s)
+    const dietResult = await db.collection("dietPlans").deleteMany({ userId });
+    console.log(`[DELETE] Deleted ${dietResult.deletedCount} diet plan(s) for user ${userId}`);
 
-    // ✅ Delete the workout plan
-    await collection.deleteOne({ userId });
-
-    return NextResponse.json({ message: "Workout plan deleted successfully" });
+    return NextResponse.json({ 
+      message: "Workout plan deleted successfully",
+      deletedWorkouts: workoutResult.deletedCount,
+      deletedDiets: dietResult.deletedCount
+    });
 
   } catch (error) {
     console.error("Error deleting workout plan:", error);

@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Invalid email or password" }, { status: 401 });
     }
 
-    // Generate short-lived access token
+    // Generate access token with longer expiration
     const accessToken = jwt.sign(
       { 
         userId: user._id.toString(), 
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         email: user.email,
       },
       SECRET_KEY,
-      { expiresIn: "30m" }
+      { expiresIn: "7d" }
     );
 
     // Generate long-lived refresh token
